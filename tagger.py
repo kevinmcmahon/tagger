@@ -23,11 +23,15 @@
 
 
 '''
-module for extracting tags from text documents
+================================================================================
 
+         tagger.py - module for extracting tags from text documents
+
+                   Copyright (C) 2011 by Alessandro Presta
+
+================================================================================
 
 Usage:
-
 
 import tagger
 
@@ -35,7 +39,7 @@ weights = pickle.load(open('data/dict.pkl', 'r'))
 # or your own dictionary
 # if using the standard Rater class, this should be a
 # defaultdict(lambda: 1.0) of IDF weights, normalized in the interval [0,1]
- 
+
 myreader = tagger.Reader() # or your own reader class
 mystemmer = tagger.Stemmer() # or your own stemmer class
 myrater = tagger.Rater(weights) # or your own... (you got the idea)
@@ -48,6 +52,7 @@ best_3_tags = mytagger(text_string, 3)
 Remember loading a huge dictionary takes quite some time, so try to reuse the
 same Tagger object for documents of the same type and language.
 
+================================================================================
 
 Running the module as a script:
 
@@ -55,6 +60,7 @@ Running the module as a script:
 
 Example: ./tagger.py tests/*
 
+================================================================================
 '''
 
 import collections
