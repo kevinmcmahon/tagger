@@ -178,7 +178,7 @@ if __name__ == '__main__':
 
     import sys
     
-    print(stem(sys.argv[1]))
+    print stem(sys.argv[1])
     
     
     

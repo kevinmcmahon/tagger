@@ -1,5 +1,27 @@
 #!/usr/bin/env python
 
+
+# Copyright (C) 2011 by Alessandro Presta
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE
+
+
 '''
 module for extracting tags from text documents
 
@@ -27,9 +49,11 @@ Remember loading a huge dictionary takes quite some time, so try to reuse the
 same Tagger object for documents of the same type and language.
 
 
-Running the tagger as a script:
+Running the module as a script:
 
-./tagger.py document_to_tag.txt
+./tagger.py <text document(s) to tag>
+
+Example: ./tagger.py tests/*
 
 '''
 
@@ -211,10 +235,10 @@ class Rater:
                 weights[t.stem]
 
         multitags = []
-        for i in range(len(tags)):
+        for i in xrange(len(tags)):
             t = MultiTag(tags[i])
             multitags.append(t)
-            for j in range(1, self.multitag_size):
+            for j in xrange(1, self.multitag_size):
                 if i + j < len(tags) and not t.terminal:
                     t = MultiTag(tags[i + j], t)
                     multitags.append(t)
@@ -229,8 +253,8 @@ class Rater:
                 continue
             # remove redundant tags
             words = t.stem.split()
-            for i in range(len(words)):
-                for j in range(1, len(words)):
+            for i in xrange(len(words)):
+                for j in xrange(1, len(words)):
                     subtag = Tag(' '.join(words[i:i + j]))
                     relative_freq = float(term_count[t]) / term_count[subtag]
                     if relative_freq >= 0.5 and t.rating > 0.0:
@@ -283,13 +307,23 @@ class Tagger:
 
 if __name__ == '__main__':
 
+    import glob
     import pickle
     import sys
+
+    if len(sys.argv) < 2:
+        print 'No arguments given, running tests: '
+        documents = glob.glob('tests/*')
+    else:
+        documents = sys.argv[1:]
     
+    print 'Loading dictionary... '
     weights = pickle.load(open('data/dict.pkl', 'r'))
     
     tagger = Tagger(Reader(), Stemmer(), Rater(weights))
 
-    with open(sys.argv[1], 'r') as file:
-        print(tagger(file.read(), 5))
+    for doc in documents:
+        with open(doc, 'r') as file:
+            print 'Tags for ', doc, ':'
+            print tagger(file.read(), 5)
           
