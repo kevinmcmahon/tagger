@@ -105,8 +105,12 @@ class Tag:
         self.string  = string
         self.stem = stem or string
         self.rating = rating
+        self.score = self.rating
         self.terminal = terminal
 
+    def score(self):
+        return self.rating
+        
     def __eq__(self, other):
         return self.stem == other.stem
 
@@ -114,7 +118,7 @@ class Tag:
         return self.string
 
     def __lt__(self, other):
-        return self.rating > other.rating
+        return self.score > other.score
 
     def __hash__(self):
         return hash(self.stem)
@@ -144,13 +148,10 @@ class MultiTag(Tag):
             self.stem = ' '.join([head.stem, tail.stem])
             self.rating = head.rating * tail.rating
             self.size = head.size + 1
+            # the measure for multitags is the geometric mean of its unit subtags
+            self.score = self.rating ** (1.0 / self.size)
 
         self.terminal = tail.terminal
-            
-    def __lt__(self, other):
-        # the measure for multitags is the geometric mean of its unit subtags
-        return self.rating ** (1.0 / self.size) > \
-            other.rating ** (1.0 / other.size)
         
             
 class Reader:
@@ -264,18 +265,15 @@ class Rater:
 
         term_count = collections.Counter(multitags)
 
-        unique_tags = set(multitags)
-        for t in multitags:
-            # purge one-character tags
-            if len(t.string) < 2:
-                unique_tags.discard(t)
-                continue
-            # remove redundant tags
+        # purge duplicates and one-character tags
+        unique_tags = set(t for t in term_count if len(t.string) >= 2)
+        # remove redundant tags
+        for t, cnt in term_count.iteritems():
             words = t.stem.split()
             for i in xrange(len(words)):
                 for j in xrange(1, len(words)):
                     subtag = Tag(' '.join(words[i:i + j]))
-                    relative_freq = float(term_count[t]) / term_count[subtag]
+                    relative_freq = float(cnt) / term_count[subtag]
                     if relative_freq >= 0.5 and t.rating > 0.0:
                         unique_tags.discard(subtag)
                     else:
@@ -337,7 +335,7 @@ if __name__ == '__main__':
         documents = sys.argv[1:]
     
     print 'Loading dictionary... '
-    weights = pickle.load(open('data/dict.pkl', 'r'))
+    weights = pickle.load(open('data/dict.pkl', 'rb'))
     
     tagger = Tagger(Reader(), Stemmer(), Rater(weights))
 

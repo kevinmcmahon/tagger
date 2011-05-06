@@ -76,7 +76,8 @@ if __name__ == '__main__':
 
     for w in stopwords:
         dictionary[w.stem] = 0.0
-        
-    with open(output_file, 'w') as f:
-        pickle.dump(dictionary, f)        
+
+    print 'Saving dictionary... '
+    with open(output_file, 'wb') as f:
+        pickle.dump(dictionary, f, -1)        
 
