@@ -59,6 +59,19 @@ Running the module as a script:
 ./tagger.py <text document(s) to tag>
 
 Example: ./tagger.py tests/*
+Output:
+Loading dictionary... 
+Tags for  tests/bbc1.txt :
+[bin laden, obama, killed, pakistan, raids]
+Tags for  tests/bbc2.txt :
+[bristol, manslaughter, jo yeates, murder, strangled]
+Tags for  tests/wikipedia1.txt :
+[anthropic principle, universe, life, observations, cosmology]
+Tags for  tests/wikipedia2.txt :
+[beet, juice, vegetable, blood pressure, dietary nitrate]
+
+
+Note that calling the script with no arguments runs the tests.
 
 ================================================================================
 '''
@@ -331,5 +344,5 @@ if __name__ == '__main__':
     for doc in documents:
         with open(doc, 'r') as file:
             print 'Tags for ', doc, ':'
-            print tagger(file.read(), 5)
+            print tagger(file.read())
           
