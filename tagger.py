@@ -59,14 +59,13 @@ Running the module as a script:
 ./tagger.py <text document(s) to tag>
 
 Example: ./tagger.py tests/*
-Output:
 Loading dictionary... 
 Tags for  tests/bbc1.txt :
-[bin laden, obama, killed, pakistan, raids]
+[bin laden, pakistan, obama, killed, raid]
 Tags for  tests/bbc2.txt :
-[bristol, manslaughter, jo yeates, murder, strangled]
+[tabak, bristol, manslaughter, jo yeates, murder]
 Tags for  tests/wikipedia1.txt :
-[anthropic principle, universe, life, observations, cosmology]
+[anthropic principle, universe, life, observed, carter]
 Tags for  tests/wikipedia2.txt :
 [beet, juice, vegetable, blood pressure, dietary nitrate]
 
@@ -146,14 +145,15 @@ class MultiTag(Tag):
         else:
             self.string = ' '.join([head.string, tail.string])
             self.stem = ' '.join([head.stem, tail.stem])
-            self.rating = head.rating * tail.rating
             self.size = head.size + 1
+
             # the measure for multitags is the geometric mean of its unit subtags
+            self.rating = head.rating * tail.rating
             self.score = self.rating ** (1.0 / self.size)
 
         self.terminal = tail.terminal
+
         
-            
 class Reader:
     '''
     Class for parsing a string of text to obtain tags
@@ -187,6 +187,7 @@ class Reader:
                 tags.append(Tag(words[-1], terminal=True))
 
         return tags
+
     
 class Stemmer:
     '''
@@ -209,7 +210,9 @@ class Stemmer:
 
         import porter
 
-        tag.stem = porter.stem(tag.string)
+        stem = porter.stem(tag.string)
+        # Saxon genitive is not treated by Porter's stemmer
+        tag.stem = stem.rstrip('\'')
 
         return tag
         
@@ -237,7 +240,7 @@ class Rater:
         
         self.weights = weights
         self.multitag_size = multitag_size
-    
+
     def __call__(self, tags):
         '''
 
@@ -264,9 +267,16 @@ class Rater:
                     multitags.append(t)
 
         term_count = collections.Counter(multitags)
-
+                    
+        # keep most frequent version of each tag
+        clusters = collections.defaultdict(collections.Counter)
+        for t in multitags:
+            clusters[t][t.string] += 1
+        for t in term_count:
+            t.string = clusters[t].most_common(1)[0][0]
+        
         # purge duplicates and one-character tags
-        unique_tags = set(t for t in term_count if len(t.string) >= 2)
+        unique_tags = set(t for t in term_count if len(t.string) > 1)
         # remove redundant tags
         for t, cnt in term_count.iteritems():
             words = t.stem.split()
@@ -274,11 +284,11 @@ class Rater:
                 for j in xrange(1, len(words)):
                     subtag = Tag(' '.join(words[i:i + j]))
                     relative_freq = float(cnt) / term_count[subtag]
-                    if relative_freq >= 0.5 and t.rating > 0.0:
+                    if relative_freq >= 0.5 and t.score > 0.0:
                         unique_tags.discard(subtag)
                     else:
                         unique_tags.discard(t)
-                        
+        
         return sorted(unique_tags)
     
     
@@ -321,6 +331,7 @@ class Tagger:
         tags = self.rater(tags)
         
         return tags[:tags_number]
+
 
 if __name__ == '__main__':
 

@@ -33,17 +33,7 @@ Running the module as a script:
 
 ./tagger.py <text document(s) to tag>
 
-Example: ./tagger.py tests/*
-Output:
-Loading dictionary... 
-Tags for  tests/bbc1.txt :
-[bin laden, obama, killed, pakistan, raids]
-Tags for  tests/bbc2.txt :
-[bristol, manslaughter, jo yeates, murder, strangled]
-Tags for  tests/wikipedia1.txt :
-[anthropic principle, universe, life, observations, cosmology]
-Tags for  tests/wikipedia2.txt :
-[beet, juice, vegetable, blood pressure, dietary nitrate]
+Example: ./tagger.py tests/*Loading dictionary... Tags for  tests/bbc1.txt :[bin laden, pakistan, obama, killed, raid]Tags for  tests/bbc2.txt :[tabak, bristol, manslaughter, jo yeates, murder]Tags for  tests/wikipedia1.txt :[anthropic principle, universe, life, observed, carter]Tags for  tests/wikipedia2.txt :[beet, juice, vegetable, blood pressure, dietary nitrate]
 
 
 Note that calling the script with no arguments runs the tests.
