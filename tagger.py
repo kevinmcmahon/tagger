@@ -64,6 +64,8 @@ Tags for  tests/bbc1.txt :
 [bin laden, pakistan, obama, killed, raid]
 Tags for  tests/bbc2.txt :
 [jo yeates, bristol, vincent tabak, manslaughter, murder]
+Tags for  tests/bbc3.txt :
+[snp, party, labour, election, scottish]
 Tags for  tests/guardian1.txt :
 [bin laden, al-qaida, pakistan, killed, statement]
 Tags for  tests/guardian2.txt :
