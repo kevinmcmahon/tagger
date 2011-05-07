@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 # Copyright (C) 2011 by Alessandro Presta
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -183,13 +182,12 @@ class Reader:
         Returns: a list of tags respecting the order in the text
         '''
 
-        delimiters = '\.,:;!?"\(\)\[\]\{\}\n\t\^~'
-        phrases = re.split('[' + delimiters + ']+', text.strip(delimiters))
-
+        phrases = re.split('[\s\n]+', text)
+        
         tags = []
 
         for p in phrases:
-            words = p.split()
+            words = re.findall('[\w\-\'_]+', p)
             if len(words) > 0:
                 tags.append(Tag(words[0].lower()))
                 for w in words[1:-1]:
@@ -227,6 +225,10 @@ class Stemmer:
 
         # Saxon genitive is not treated by Porter's stemmer
         stem = tag.string.rstrip('s').rstrip('\'')
+
+        # detect contractions of 'are'
+        if stem.endswith('\'re'): stem = stem[:-3]
+        
         tag.stem = porter.stem(stem)
         
         return tag    
