@@ -26,12 +26,6 @@
 Usage: build_dict.py -o <output file> -s <stopwords file> <list of files>
 '''
 
-import collections
-import getopt
-import math
-import pickle
-import sys
-
 from tagger import Reader, Stemmer
 
 
@@ -44,6 +38,9 @@ def build_dict(words, stopwords=None):
 
     Returns: a dictionary of IDF weights
     '''
+
+    import collections
+    import math
 
     term_count = collections.Counter(words)
     total_count = len(words)
@@ -75,6 +72,8 @@ def build_dict_from_files(output_file, corpus, stopwords_file=None,
                             printed on screen
     '''
 
+    import pickle
+    
     stopwords = None
     
     if stopwords_file:
@@ -101,6 +100,9 @@ def build_dict_from_files(output_file, corpus, stopwords_file=None,
 
 if __name__ == '__main__':
 
+    import getopt
+    import sys
+    
     try:
         options = getopt.getopt(sys.argv[1:], 'o:s:')
         output_file = options[0][0][1]
