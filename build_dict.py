@@ -35,6 +35,70 @@ import sys
 from tagger import Reader, Stemmer
 
 
+def build_dict(words, stopwords=None):
+    '''
+    Arguments:
+
+    words        --    the list of (stemmed) words used to build the dictionary
+    stopwords    --    the list of (stemmed) words that should have zero weight
+
+    Returns: a dictionary of IDF weights
+    '''
+
+    term_count = collections.Counter(words)
+    total_count = len(words)
+    
+    dictionary = {}
+    
+    for w, cnt in term_count.iteritems():
+        dictionary[w] = 1.0 - math.log(float(cnt) + 1) / math.log(total_count)
+
+    if stopwords:
+        for w in stopwords:
+            dictionary[w] = 0.0
+    
+    return dictionary
+
+
+def build_dict_from_files(output_file, corpus, stopwords_file=None,
+                          reader=Reader(), stemmer=Stemmer(), verbose=False):
+    '''
+    Arguments:
+
+    output_file       --    the binary stream where the dictionary should be
+                            saved
+    corpus            --    a list of streams with words to process
+    stopwords_file    --    a stream containing a list of stopwords
+    reader            --    the Reader object to be used
+    stemmer           --    the Stemmer object to be used
+    verbose           --    whether information on the progress should be
+                            printed on screen
+    '''
+
+    stopwords = None
+    
+    if stopwords_file:
+        if verbose: print 'Reading stopwords...'
+        stopwords = reader(stopwords_file.read())
+
+    words = []
+        
+    print 'Reading corpus...'
+    for doc in corpus:
+        words += reader(doc.read())
+
+    if verbose: print 'Processing tags...'
+    words = map(stemmer, words)
+    stopwords = map(stemmer, stopwords)
+
+    if verbose: print 'Building dictionary... '
+    dictionary = build_dict([w.stem for w in words],
+                            [w.stem for w in stopwords])
+
+    if verbose: print 'Saving dictionary... '
+    pickle.dump(dictionary, output_file, -1) 
+    
+
 if __name__ == '__main__':
 
     try:
@@ -46,38 +110,11 @@ if __name__ == '__main__':
         print __doc__
         exit(1)
     
-    reader = Reader()
-    stemmer = Stemmer()
+    corpus = [open(doc, 'r') for doc in corpus]
+    stopwords_file = open(stopwords_file, 'r')
+    output_file = open(output_file, 'wb')
 
-    print 'Reading stopwords... '
-    with open(stopwords_file, 'r') as f:
-        stopwords = reader(f.read())
-        
-    words = []
-
-    print 'Reading corpus... '
-    for doc in corpus:
-        with open(doc, 'r') as f:
-            words += reader(f.read())
-
-    print 'Processing tags... '
-    words = map(stemmer, words)
-    stopwords = map(stemmer, stopwords)
-
-    term_count = collections.Counter(words)
-    total_count = len(words)
-
-    dictionary = {}
-
-    print 'Building dictionary... '
-    for w, cnt in term_count.iteritems():
-        dictionary[w.stem] = 1.0 - \
-            math.log(float(cnt) + 1) / math.log(total_count)
-
-    for w in stopwords:
-        dictionary[w.stem] = 0.0
-
-    print 'Saving dictionary... '
-    with open(output_file, 'wb') as f:
-        pickle.dump(dictionary, f, -1)        
+    build_dict_from_files(output_file, corpus, stopwords_file, verbose=True)
+    
+               
 
