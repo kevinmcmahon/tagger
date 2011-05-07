@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 # Copyright (C) 2011 by Alessandro Presta
 
@@ -182,6 +183,9 @@ class Reader:
         Returns: a list of tags respecting the order in the text
         '''
 
+        # deal with unicode apostrophes
+        text = text.replace('’', '\'')
+        
         phrases = re.split('[\s\n]+', text)
         
         tags = []
