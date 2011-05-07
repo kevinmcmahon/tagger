@@ -82,7 +82,6 @@ Note that calling the script with no arguments runs the tests.
 '''
 
 import collections
-import operator
 import re
 
 
