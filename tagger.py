@@ -93,7 +93,6 @@ class Tag:
     def __init__(self, string, stem=None, rating=1.0, proper=False,
                  terminal=False):
         '''
-
         Arguments:
 
         string    --    the actual representation of the tag
@@ -135,7 +134,6 @@ class MultiTag(Tag):
 
     def __init__(self, tail, head=None):
         '''
-
         Arguments:
 
         tail    --    the Tag object to add to the first part (head)
@@ -176,7 +174,6 @@ class Reader:
 
     def __call__(self, text):
         '''
-
         Arguments:
 
         text    --    the string of text to be tagged
@@ -215,10 +212,25 @@ class Stemmer:
     this can be improved a lot, so experimenting with different ones is
     advisable)
     '''
+
+    def pre_stem(self, string):
+        '''
+        Arguments:
+
+        string    --    a string to be treated before passing it to the stemmer
+
+        Returns: the processed string
+        '''
+
+        # detect contractions of 'are'
+        if string.endswith('\'re'): return string[:-3]
+            
+        # Saxon genitive is not treated by Porter's stemmer
+        return string.rstrip('s').rstrip('\'')
+        
     
     def __call__(self, tag):
         '''
-
         Arguments:
 
         tag    --    the tag to be stemmed
@@ -228,14 +240,8 @@ class Stemmer:
 
         import porter
 
-        # Saxon genitive is not treated by Porter's stemmer
-        stem = tag.string.rstrip('s').rstrip('\'')
-
-        # detect contractions of 'are'
-        if stem.endswith('\'re'): stem = stem[:-3]
-        
-        tag.stem = porter.stem(stem)
-        
+        string = self.pre_stem(tag.string)
+        tag.stem = porter.stem(string)
         return tag    
 
 
@@ -249,8 +255,6 @@ class Rater:
 
     def __init__(self, weights, multitag_size=3):
         '''
-        Constructor for class Rater
-
         Arguments:
 
         weights          --    a dictionary of IDF weights normalized in the
@@ -265,7 +269,6 @@ class Rater:
 
     def __call__(self, tags):
         '''
-
         Arguments:
 
         tags    --    a list of (preferably stemmed) tags
@@ -277,7 +280,7 @@ class Rater:
         
         for t in tags:
             t.rating = float(term_count[t]) / len(tags) * \
-                weights.get(t.stem, 1.0)
+                self.weights.get(t.stem, 1.0)
 
         multitags = []
         for i in xrange(len(tags)):
@@ -327,7 +330,6 @@ class Tagger:
 
     def __init__(self, reader, stemmer, rater):
         '''
-
         Arguments:
 
         reader    --    a callable object with the same interface as Reader
@@ -341,14 +343,12 @@ class Tagger:
 
     def __call__(self, text, tags_number=5):
         '''
-
         Arguments:
 
         text           --    the string of text to be tagged
         tags_number    --    number of best tags to be returned
 
         Returns: a list of (hopefully) relevant tags
-        
         ''' 
 
         tags = self.reader(text)
