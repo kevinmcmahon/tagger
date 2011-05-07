@@ -4,25 +4,6 @@ In physics and cosmology, the anthropic principle is the philosophical argument 
 
 The Strong Anthropic principle as explained by Barrow and Tipler (see Variants) states that this is all the case because conscious life, in some sense, needed to exist. Critics argue in favor of a Weak Anthropic principle, which states that the universe's fine tuning amounts to selection bias; in an infinite universe, some worlds might evolve conscious life. Douglas Adams used the metaphor of a living puddle examining its own shape, since, to those living creatures, the universe may appear to fit them perfectly (in fact, they simply fit the universe perfectly).
 
-Contents
-
-1 Definition and basis
-2 Anthropic coincidences
-3 Origin
-4 Variants
-5 Character of anthropic reasoning
-6 Observational evidence
-7 Applications of the principle
-7.1 The nucleosynthesis of carbon-12
-7.2 Cosmic inflation
-7.3 String theory
-7.4 Ice density
-8 The Anthropic Cosmological Principle
-9 Criticisms
-10 See also
-11 Footnotes
-12 References
-13 External links
 Definition and basis
 
 The principle was formulated as a response to a series of observations that the laws of nature and parameters of the Universe take on values that are consistent with conditions for life as we know it rather than a set of values that would not be consistent with life as observed on Earth. The anthropic principle states that this phenomenon is a necessity because living observers wouldn't be able to exist, and hence, observe the Universe, were these laws and constants not constituted in this way.

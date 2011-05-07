@@ -65,14 +65,14 @@ if __name__ == '__main__':
     stopwords = map(stemmer, stopwords)
 
     term_count = collections.Counter(words)
-    total_count = len(list(term_count.elements()))
-    
-    dictionary = collections.defaultdict(int)
+    total_count = len(words)
+
+    dictionary = {}
 
     print 'Building dictionary... '
-    for w in term_count:
+    for w, cnt in term_count.iteritems():
         dictionary[w.stem] = 1.0 - \
-            math.log(float(term_count[w]) + 1) / math.log(total_count)
+            math.log(float(cnt) + 1) / math.log(total_count)
 
     for w in stopwords:
         dictionary[w.stem] = 0.0
