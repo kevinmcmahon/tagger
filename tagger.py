@@ -118,7 +118,7 @@ class Tag:
         return self.stem == other.stem
 
     def __repr__(self):
-        return self.string
+        return repr(self.string)
 
     def __lt__(self, other):
         return self.score > other.score
@@ -272,6 +272,21 @@ class Rater:
         self.weights = weights
         self.multitag_size = multitag_size
 
+    def create_multitags(self, tags):
+        multitags = []
+        
+        for i in xrange(len(tags)):
+            t = MultiTag(tags[i])
+            multitags.append(t)
+            for j in xrange(1, self.multitag_size):
+                if t.terminal or i + j >= len(tags):
+                    break
+                else:
+                    t = MultiTag(tags[i + j], t)
+                    multitags.append(t)
+
+        return multitags
+        
     def __call__(self, tags):
         '''
         Arguments:
@@ -287,16 +302,7 @@ class Rater:
             t.rating = float(term_count[t]) / len(tags) * \
                 self.weights.get(t.stem, 1.0)
 
-        multitags = []
-        for i in xrange(len(tags)):
-            t = MultiTag(tags[i])
-            multitags.append(t)
-            for j in xrange(1, self.multitag_size):
-                if t.terminal or i + j >= len(tags):
-                    break
-                else:
-                    t = MultiTag(tags[i + j], t)
-                    multitags.append(t)
+        multitags = self.create_multitags(tags)
 
         term_count = collections.Counter(multitags)
         

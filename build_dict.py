@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 # Copyright (C) 2011 by Alessandro Presta
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy

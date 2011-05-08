@@ -1,28 +1,44 @@
-from tagger import Reader, Stemmer
+# Copyright (C) 2011 by Alessandro Presta
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE
+
+
+from tagger import Reader, Stemmer, Rater
 
 
 class HTMLReader(Reader):
     '''
-    A Reader subclass that also strips HTML code from the input
+    Reader subclass that can parse HTML code from the input.
     '''
 
     def __call__(self, html):
-        # alternative to test: http://bit.ly/jX50oE
+        # TODO: strip HTML code, map entities
+        # tools: HTMLParser, htmlentitydefs, BeautifulSoup,
+        # regular expressions
         
-        from BeautifulSoup import BeautifulSoup, BeautifulStoneSoup
+        #return Reader.__call__(self, text)
+        pass
 
-        text = ''.join(BeautifulSoup(html).findAll(text=True))
-
-        # map html entities
-        text = BeautifulStoneSoup(text, convertEntities=
-                                  BeautifulStoneSoup.HTML_ENTITIES)
-        
-        return Reader.__call__(self, text)
-    
 
 class NLTKStemmer(Stemmer):
     '''
-    A Stemmer subclass that uses NLTK's implementation of the Porter stemming
+    Stemmer subclass that uses NLTK's implementation of the Porter stemming
     algorithm.
     '''
 
@@ -33,6 +49,35 @@ class NLTKStemmer(Stemmer):
     
     def __call__(self, tag):
         stem = self.pre_stem(tag.string)
-        tag.stem = self.stemmer.stem(tag.stem)
+        tag.stem = self.stemmer.stem(stem)
         return tag
+
+
+class CollocationsRater(Rater):
+    '''
+    Rater subclass that uses bigram and trigram collocations to identify
+    significant multitags.
+    '''
+    # TODO
+    # tools: nltk.collocations
+    # strategy: override Rater.create_multitags
+
+    def create_multitags(self, tags):
+        pass
+
+
+def build_dict_mapreduce():
+    '''
+    Map/reduce implementation of dictionary building.
+    ''' 
+    # TODO
+    # tools: Pool.map, couchdb, hadoop
+    pass
+
+
+# TODO: utilities to take advantage of nltk.corpus and nltk.text in dictionary
+# building
+
+
+
         
