@@ -73,6 +73,12 @@ class CollocationsRater(Rater):
     significant multitags
     '''
 
+    def __init__(weights, multitag_size=3):
+        # there is no support for arbitrary length n-grams yet
+        multitag_size = min(multitag_size, 3)
+        
+        Rater.__init__(self, multitag_size)
+    
     def create_multitags(self, tags):
         # TODO
         # tools: nltk.collocations
