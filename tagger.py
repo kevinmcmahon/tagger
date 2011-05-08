@@ -243,10 +243,9 @@ class Stemmer:
         Returns: the stemmed tag
         '''
 
-        import porter
-
+        from stemming import porter2
         string = self.pre_stem(tag.string)
-        tag.stem = porter.stem(string)
+        tag.stem = porter2.stem(string)
         return tag    
 
 

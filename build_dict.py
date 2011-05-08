@@ -48,7 +48,7 @@ def build_dict(words, stopwords=None):
     
     for w, cnt in term_count.iteritems():
         dictionary[w] = 1.0 - math.log(float(cnt) + 1) / math.log(total_count)
-
+        
     if stopwords:
         for w in stopwords:
             dictionary[w] = 0.0

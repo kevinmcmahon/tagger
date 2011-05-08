@@ -20,6 +20,7 @@
 
 
 from tagger import Reader, Stemmer, Rater
+from stemming import porter
 
 
 class HTMLReader(Reader):
@@ -50,6 +51,19 @@ class NLTKStemmer(Stemmer):
     def __call__(self, tag):
         stem = self.pre_stem(tag.string)
         tag.stem = self.stemmer.stem(stem)
+        return tag
+
+
+class FastStemmer(Stemmer):
+    '''
+    Stemmer subclass that uses a much faster, but less correct algorithm.
+    '''
+
+    def __call__(self, tag):
+        from stemming import porter
+        
+        stem = self.pre_stem(tag.string)
+        tag.stem = porter.stem(stem)
         return tag
 
 
