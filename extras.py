@@ -25,7 +25,7 @@ from stemming import porter
 
 class HTMLReader(Reader):
     '''
-    Reader subclass that can parse HTML code from the input.
+    Reader subclass that can parse HTML code from the input
     '''
 
     def __call__(self, html):
@@ -40,7 +40,7 @@ class HTMLReader(Reader):
 class NLTKStemmer(Stemmer):
     '''
     Stemmer subclass that uses NLTK's implementation of the Porter stemming
-    algorithm.
+    algorithm
     '''
 
     def __init__(self):
@@ -56,7 +56,7 @@ class NLTKStemmer(Stemmer):
 
 class FastStemmer(Stemmer):
     '''
-    Stemmer subclass that uses a much faster, but less correct algorithm.
+    Stemmer subclass that uses a much faster, but less correct algorithm
     '''
 
     def __call__(self, tag):
@@ -70,7 +70,7 @@ class FastStemmer(Stemmer):
 class CollocationsRater(Rater):
     '''
     Rater subclass that uses bigram and trigram collocations to identify
-    significant multitags.
+    significant multitags
     '''
 
     def create_multitags(self, tags):

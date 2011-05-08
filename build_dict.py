@@ -35,7 +35,7 @@ def build_dict(words, stopwords=None):
     words        --    the list of (stemmed) words used to build the dictionary
     stopwords    --    the list of (stemmed) words that should have zero weight
 
-    Returns: a dictionary of IDF weights
+    Returns: a dictionary of ICF (inverse collection frequency) weights
     '''
 
     import collections
