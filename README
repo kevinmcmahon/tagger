@@ -6,51 +6,49 @@
 
 ================================================================================
 
+Dependencies: python2.7, stemming, nltk (optional)
+
+$ easy_install stemming
+$ easy_install nltk
+
+================================================================================
+
 Usage:
 
-import tagger
+>>> import tagger
 
-weights = pickle.load(open('data/dict.pkl', 'rb'))
-# or your own dictionary
-# if using the standard Rater class, this should be a dictionary of IDF weights
-# normalized in the interval [0,1]
+>>> weights = pickle.load(open('data/dict.pkl', 'rb')) # or your own dictionary
 
-myreader = tagger.Reader() # or your own reader class
-mystemmer = tagger.Stemmer() # or your own stemmer class
-myrater = tagger.Rater(weights) # or your own... (you got the idea)
+>>> myreader = tagger.Reader() # or your own reader class
+>>> mystemmer = tagger.Stemmer() # or your own stemmer class
+>>> myrater = tagger.Rater(weights) # or your own... (you got the idea)
 
-mytagger = Tagger(myreader, mystemmer, myrater)
+>>> mytagger = Tagger(myreader, mystemmer, myrater)
 
-best_3_tags = mytagger(text_string, 3)
-
-
-Remember loading a huge dictionary takes quite some time, so try to reuse the
-same Tagger object for documents of the same type and language.
+>>> best_3_tags = mytagger(text_string, 3)
 
 ================================================================================
 
 Running the module as a script:
 
-./tagger.py <text document(s) to tag>
+$ ./tagger.py <text document(s) to tag>
 
-Example: ./tagger.py tests/*
+Example: 
+$ ./tagger.py tests/*
 Loading dictionary... 
 Tags for  tests/bbc1.txt :
-[bin laden, pakistan, obama, killed, raid]
+['bin laden', 'pakistan', 'obama', 'killed', 'raid']
 Tags for  tests/bbc2.txt :
-[jo yeates, bristol, vincent tabak, manslaughter, murder]
+['jo yeates', 'bristol', 'vincent tabak', 'murder', 'strangled']
 Tags for  tests/bbc3.txt :
-[snp, party, labour, election, scottish]
+['snp', 'party', 'labour', 'election', 'scottish']
 Tags for  tests/guardian1.txt :
-[bin laden, al-qaida, pakistan, killed, statement]
+['bin laden', 'al-qaida', 'pakistan', 'killed', 'statement']
 Tags for  tests/guardian2.txt :
-[clegg, party, lib dem, coalition, tory]
+['clegg', 'party', 'lib dem', 'coalition', 'tory']
 Tags for  tests/wikipedia1.txt :
-[anthropic principle, universe, life, tipler, observed]
+['anthropic principle', 'universe', 'life', 'observed', 'carter']
 Tags for  tests/wikipedia2.txt :
-[beetroot, beet, betaine, blood pressure, vegetable]
-
-
-Note that calling the script with no arguments runs the tests.
+['beetroot', 'beet', 'betaine', 'blood pressure', 'vegetable']
 
 ================================================================================

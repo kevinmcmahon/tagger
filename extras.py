@@ -72,23 +72,17 @@ class CollocationsRater(Rater):
     Rater subclass that uses bigram and trigram collocations to identify
     significant multitags.
     '''
-    # TODO
-    # tools: nltk.collocations
-    # strategy: override Rater.create_multitags
 
     def create_multitags(self, tags):
+        # TODO
+        # tools: nltk.collocations
         pass
 
 
-def build_dict_mapreduce():
-    '''
-    Map/reduce implementation of dictionary building.
-    ''' 
-    # TODO
-    # tools: Pool.map, couchdb, hadoop
-    pass
+# TODO: map/reduce implentation of dictionary building
+# tools: Pool.map, couchdb, hadoop
 
-
+     
 # TODO: utilities to take advantage of nltk.corpus and nltk.text in dictionary
 # building
 
