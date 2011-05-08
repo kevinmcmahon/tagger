@@ -117,6 +117,11 @@ if __name__ == '__main__':
     output_file = open(output_file, 'wb')
 
     build_dict_from_files(output_file, corpus, stopwords_file, verbose=True)
+
+    output_file.close()
+    stopwords_file.close()
+    for doc in corpus:
+        doc.close()
     
                
 

@@ -9,11 +9,13 @@ class HTMLReader(Reader):
     def __call__(self, html):
         # alternative to test: http://bit.ly/jX50oE
         
-        from BeautifulSoup import BeautifulSoup
+        from BeautifulSoup import BeautifulSoup, BeautifulStoneSoup
 
         text = ''.join(BeautifulSoup(html).findAll(text=True))
 
-        # TODO: map html entities
+        # map html entities
+        text = BeautifulStoneSoup(text, convertEntities=
+                                  BeautifulStoneSoup.HTML_ENTITIES)
         
         return Reader.__call__(self, text)
     

@@ -172,6 +172,10 @@ class Reader:
     e.g. a good HTML-stripping facility would be handy)
     '''
 
+    match_punctuation = re.compile('[\.,;:\?!\(\)\[\]\{\}<>]')
+    match_delimiters = re.compile('[\t\n\r\f\v]+')
+    match_words = re.compile('[\w\-\'_]+')
+    
     def __call__(self, text):
         '''
         Arguments:
@@ -183,13 +187,14 @@ class Reader:
 
         # deal with unicode apostrophes
         text = text.replace('’', '\'')
-        
-        phrases = re.split('[\s\n]+', text)
-        
+
+        text = self.match_punctuation.sub('\n', text)
+        phrases = self.match_delimiters.split(text)
+
         tags = []
 
         for p in phrases:
-            words = re.findall('[\w\-\'_]+', p)
+            words = self.match_words.findall(p)
             if len(words) > 0:
                 tags.append(Tag(words[0].lower()))
                 for w in words[1:-1]:
