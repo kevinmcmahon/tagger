@@ -252,7 +252,7 @@ class Rater:
     '''
     Class for estimating the relevance of tags
 
-    (uses TF-IDF weight and geometric mean for multitags; a quite rudimental
+    (uses TF-ICF weight and geometric mean for multitags; a quite rudimental
     heuristic tries to discard redundant tags)
     '''
 
@@ -260,9 +260,8 @@ class Rater:
         '''
         Arguments:
 
-        weights          --    a dictionary of IDF weights normalized in the
-                               interval [0,1]; preferably of type:
-                                   defaultdict(lambda: 1.0)
+        weights          --    a dictionary of ICF weights normalized in the
+                               interval [0,1]
         multitag_size    --    maximum size of tags formed by multiple unit
                                tags
         '''
