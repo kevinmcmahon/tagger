@@ -19,8 +19,7 @@
 # THE SOFTWARE
 
 
-from tagger import Reader, Stemmer, Rater
-from stemming import porter
+from tagger import *
 
 
 class HTMLReader(Reader):
@@ -36,6 +35,19 @@ class HTMLReader(Reader):
         #return Reader.__call__(self, text)
         pass
 
+    
+class SimpleReader(Reader):
+    '''
+    Reader subclass that doens't perform any advanced analysis of the text.
+    '''
+    
+    def __call__(self, text):
+        text = text.lower()
+        text = self.match_punctuation.sub('\n', text)
+        words = self.match_words.findall(text)
+        tags = [Tag(w) for w in words]
+        return tags
+    
 
 class NLTKStemmer(Stemmer):
     '''
@@ -85,12 +97,69 @@ class CollocationsRater(Rater):
         pass
 
 
-# TODO: map/reduce implentation of dictionary building
-# tools: Pool.map, couchdb, hadoop
+def build_dict_from_nltk(output_file, corpus=None, stopwords=None,
+                         reader=SimpleReader(), stemmer=Stemmer(),
+                         verbose=False):
+    '''
+    Arguments:
+
+    output_file           --    the binary stream where the dictionary should
+                                be saved
+    corpus                --    the NLTK corpus to use (defaults to
+                                nltk.corpus.brown)
+    stopwords             --    a list of (not stemmed) stopwords (defaults to
+                                nltk.corpus.stopwords.words('english'))
+    reader                --    the Reader object to be used
+    stemmer               --    the Stemmer object to be used
+    verbose               --    whether information on the progress should be
+                                printed on screen
+    '''
+    
+    from build_dict import build_dict
+    import nltk
+    import pickle
+
+    if not corpus:
+        nltk.download('brown', quiet=True)
+        corpus = nltk.corpus.brown
+
+    if not stopwords:
+        nltk.download('stopwords', quiet=True)
+        stopwords = nltk.corpus.stopwords.words('english')
+
+    # just for consistency
+    if verbose: print 'Reading stopwords...'
+    
+    if verbose: print 'Reading corpus...'
+    text = ' '.join(corpus.words())
+    words = reader(text)
+
+    if verbose: print 'Processing tags...'
+    words = map(stemmer, words)
+    stopwords = map(stemmer, (Tag(w) for w in stopwords))
+
+    if verbose: print 'Building dictionary... '
+    dictionary = build_dict([w.stem for w in words],
+                            [w.stem for w in stopwords])
+
+    if verbose: print 'Saving dictionary... '
+    pickle.dump(dictionary, output_file, -1) 
+
+
+
+    
+
+    
 
      
-# TODO: utilities to take advantage of nltk.corpus and nltk.text in dictionary
-# building
+
+    
+
+        
+
+    
+
+
 
 
 

@@ -31,10 +31,11 @@
 
 ================================================================================
 
-Dependencies: python2.7, stemming, nltk (optional)
+Dependencies: python2.7, stemming, nltk (optional), Tkinter (optional)
 
 $ easy_install stemming
 $ easy_install nltk
+$ easy_install Tkinter
 
 ================================================================================
 
@@ -62,9 +63,9 @@ Example:
 $ ./tagger.py tests/*
 Loading dictionary... 
 Tags for  tests/bbc1.txt :
-['bin laden', 'pakistan', 'obama', 'killed', 'raid']
+['bin laden', 'obama', 'pakistan', 'killed', 'raid']
 Tags for  tests/bbc2.txt :
-['jo yeates', 'bristol', 'vincent tabak', 'murder', 'strangled']
+['bristol', 'jo yeates', 'vincent tabak', 'murder', '17 december']
 Tags for  tests/bbc3.txt :
 ['snp', 'party', 'labour', 'election', 'scottish']
 Tags for  tests/guardian1.txt :
@@ -72,9 +73,9 @@ Tags for  tests/guardian1.txt :
 Tags for  tests/guardian2.txt :
 ['clegg', 'party', 'lib dem', 'coalition', 'tory']
 Tags for  tests/wikipedia1.txt :
-['anthropic principle', 'universe', 'life', 'observed', 'carter']
+['anthropic principle', 'universe', 'carter', 'life', 'observed']
 Tags for  tests/wikipedia2.txt :
-['beetroot', 'beet', 'betaine', 'blood pressure', 'vegetable']
+['beetroot', 'beet', 'betaine', 'vegetable', 'blood pressure']
 
 ================================================================================
 '''
@@ -166,8 +167,9 @@ class Reader:
     Class for parsing a string of text to obtain tags
 
     (it just turns the string to lowercase and splits it according to
-    whitespaces and punctuation; different rules and formats could be used,
-    e.g. a good HTML-stripping facility would be handy)
+    whitespaces and punctuation, identifying proper nounds and terminal words;
+    different rules and formats could be used, e.g. a good HTML-stripping
+    facility would be handy)
     '''
 
     match_punctuation = re.compile('[\.,;:\?!\(\)\[\]\{\}<>]')
@@ -216,6 +218,8 @@ class Stemmer:
     advisable)
     '''
 
+    match_contractions = re.compile('(\w+)\'(m|re|d|ve|s|ll|t)?')
+    
     def pre_stem(self, string):
         '''
         Arguments:
@@ -225,12 +229,11 @@ class Stemmer:
         Returns: the processed string
         '''
 
-        # detect contractions of 'are'
-        if string.endswith('\'re'): return string[:-3]
-            
-        # Saxon genitive is not treated by Porter's stemmer
-        return string.rstrip('s').rstrip('\'')
-        
+        # get rid of contractions and possessive forms
+        match = self.match_contractions.match(string)
+        if match: return match.group(1)
+        else: return string
+    
     
     def __call__(self, tag):
         '''
@@ -242,7 +245,7 @@ class Stemmer:
         '''
 
         from stemming import porter2
-        
+
         string = self.pre_stem(tag.string)
         tag.stem = porter2.stem(string)
         return tag    
@@ -252,15 +255,15 @@ class Rater:
     '''
     Class for estimating the relevance of tags
 
-    (uses TF-ICF weight and geometric mean for multitags; a quite rudimental
-    heuristic tries to discard redundant tags)
+    (the default implementation uses TF-ICF weight and geometric mean for
+    multitags; a quite rudimental heuristic tries to discard redundant tags)
     '''
 
     def __init__(self, weights, multitag_size=3):
         '''
         Arguments:
 
-        weights          --    a dictionary of ICF weights normalized in the
+        weights          --    a dictionary of weights normalized in the
                                interval [0,1]
         multitag_size    --    maximum size of tags formed by multiple unit
                                tags

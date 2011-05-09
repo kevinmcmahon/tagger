@@ -25,7 +25,8 @@
 Usage: build_dict.py -o <output file> -s <stopwords file> <list of files>
 '''
 
-from tagger import Reader, Stemmer
+from tagger import Stemmer
+from extras import SimpleReader
 
 
 def build_dict(words, stopwords=None):
@@ -57,7 +58,8 @@ def build_dict(words, stopwords=None):
 
 
 def build_dict_from_files(output_file, corpus, stopwords_file=None,
-                          reader=Reader(), stemmer=Stemmer(), verbose=False):
+                          reader=SimpleReader(), stemmer=Stemmer(),
+                          verbose=False):
     '''
     Arguments:
 

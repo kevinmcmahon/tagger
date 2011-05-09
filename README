@@ -6,10 +6,11 @@
 
 ================================================================================
 
-Dependencies: python2.7, stemming, nltk (optional)
+Dependencies: python2.7, stemming, nltk (optional), Tkinter (optional)
 
 $ easy_install stemming
 $ easy_install nltk
+$ easy_install Tkinter
 
 ================================================================================
 
@@ -37,9 +38,9 @@ Example:
 $ ./tagger.py tests/*
 Loading dictionary... 
 Tags for  tests/bbc1.txt :
-['bin laden', 'pakistan', 'obama', 'killed', 'raid']
+['bin laden', 'obama', 'pakistan', 'killed', 'raid']
 Tags for  tests/bbc2.txt :
-['jo yeates', 'bristol', 'vincent tabak', 'murder', 'strangled']
+['bristol', 'jo yeates', 'vincent tabak', 'murder', '17 december']
 Tags for  tests/bbc3.txt :
 ['snp', 'party', 'labour', 'election', 'scottish']
 Tags for  tests/guardian1.txt :
@@ -47,8 +48,8 @@ Tags for  tests/guardian1.txt :
 Tags for  tests/guardian2.txt :
 ['clegg', 'party', 'lib dem', 'coalition', 'tory']
 Tags for  tests/wikipedia1.txt :
-['anthropic principle', 'universe', 'life', 'observed', 'carter']
+['anthropic principle', 'universe', 'carter', 'life', 'observed']
 Tags for  tests/wikipedia2.txt :
-['beetroot', 'beet', 'betaine', 'blood pressure', 'vegetable']
+['beetroot', 'beet', 'betaine', 'vegetable', 'blood pressure']
 
 ================================================================================
