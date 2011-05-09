@@ -34,8 +34,6 @@
 Dependencies: python2.7, stemming, nltk (optional), Tkinter (optional)
 
 $ easy_install stemming
-$ easy_install nltk
-$ easy_install Tkinter
 
 ================================================================================
 
