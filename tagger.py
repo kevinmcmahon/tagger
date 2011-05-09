@@ -211,12 +211,28 @@ class Stemmer:
     '''
     Class for extracting the stem of a word
     
-    (uses a simple open-source implementation of the Porter algorithm;
-    this can be improved a lot, so experimenting with different ones is
-    advisable)
+    (by deafault it uses a simple open-source implementation of the Porter
+    algorithm; this can be improved a lot, so experimenting with different ones
+    is advisable; nltk.stem provides different algorithms for many languages)
     '''
 
     match_contractions = re.compile('(\w+)\'(m|re|d|ve|s|ll|t)?')
+
+    def __init__(self, stemmer=None):
+        '''
+        Arguments:
+
+        stemmer    --    an object or module with a 'stem' method (defaults to
+                         stemming.porter2)
+
+        Returns: a new Stemmer object
+        '''
+        
+        if not stemmer:
+            from stemming import porter2
+            stemmer = porter2
+
+        self.stemmer = stemmer
     
     def pre_stem(self, string):
         '''
@@ -242,10 +258,8 @@ class Stemmer:
         Returns: the stemmed tag
         '''
 
-        from stemming import porter2
-
         string = self.pre_stem(tag.string)
-        tag.stem = porter2.stem(string)
+        tag.stem = self.stemmer.stem(string)
         return tag    
 
 
@@ -254,7 +268,9 @@ class Rater:
     Class for estimating the relevance of tags
 
     (the default implementation uses TF-ICF weight and geometric mean for
-    multitags; a quite rudimental heuristic tries to discard redundant tags)
+    multitags, but any other measure will work, provided that it is normalized
+    in the interval [0,1]; a quite rudimental heuristic tries to discard
+    redundant tags)
     '''
 
     def __init__(self, weights, multitag_size=3):
@@ -265,6 +281,8 @@ class Rater:
                                interval [0,1]
         multitag_size    --    maximum size of tags formed by multiple unit
                                tags
+
+        Returns: a new Rater object
         '''
         
         self.weights = weights
@@ -344,6 +362,8 @@ class Tagger:
         reader    --    a callable object with the same interface as Reader
         stemmer   --    a callable object with the same interface as Stemmer
         rater     --    a callable object with the same interface as Rater
+
+        Returns: a new Tagger object
         '''
         
         self.reader = reader

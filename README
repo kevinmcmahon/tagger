@@ -6,7 +6,7 @@
 
 ================================================================================
 
-Dependencies: python2.7, stemming, nltk (optional), Tkinter (optional)
+Dependencies: python2.7, stemming, nltk (optional), tkinter (optional)
 
 $ easy_install stemming
 

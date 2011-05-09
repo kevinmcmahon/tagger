@@ -47,23 +47,6 @@ class SimpleReader(Reader):
         words = self.match_words.findall(text)
         tags = [Tag(w) for w in words]
         return tags
-    
-
-class NLTKStemmer(Stemmer):
-    '''
-    Stemmer subclass that uses NLTK's implementation of the Porter stemming
-    algorithm
-    '''
-
-    def __init__(self):
-        import nltk
-
-        self.stemmer = nltk.stem.porter.PorterStemmer()
-    
-    def __call__(self, tag):
-        stem = self.pre_stem(tag.string)
-        tag.stem = self.stemmer.stem(stem)
-        return tag
 
 
 class FastStemmer(Stemmer):
@@ -71,12 +54,9 @@ class FastStemmer(Stemmer):
     Stemmer subclass that uses a much faster, but less correct algorithm
     '''
 
-    def __call__(self, tag):
+    def __init__(self):
         from stemming import porter
-        
-        stem = self.pre_stem(tag.string)
-        tag.stem = porter.stem(stem)
-        return tag
+        Stemmer.__init__(self, porter)
 
 
 class CollocationsRater(Rater):
