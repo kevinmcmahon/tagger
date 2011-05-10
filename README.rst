@@ -19,16 +19,15 @@ You can install the stemming package with::
 Usage
 =====
 
-Tagging a text document from Python:
+Tagging a text document from Python::
 
->>> import tagger
->>> weights = pickle.load(open('data/dict.pkl', 'rb')) # or your own dictionary
->>> myreader = tagger.Reader() # or your own reader class
->>> mystemmer = tagger.Stemmer() # or your own stemmer class
->>> myrater = tagger.Rater(weights) # or your own... (you got the idea)
->>> mytagger = Tagger(myreader, mystemmer, myrater)
->>> best_3_tags = mytagger(text_string, 3)
-
+    import tagger
+    weights = pickle.load(open('data/dict.pkl', 'rb')) # or your own dictionary
+    myreader = tagger.Reader() # or your own reader class
+    mystemmer = tagger.Stemmer() # or your own stemmer class
+    myrater = tagger.Rater(weights) # or your own... (you got the idea)
+    mytagger = Tagger(myreader, mystemmer, myrater)
+    best_3_tags = mytagger(text_string, 3)
 
 Running the module as a script::
 
