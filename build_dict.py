@@ -29,27 +29,49 @@ from tagger import Stemmer
 from extras import SimpleReader
 
 
-def build_dict(words, stopwords=None):
+def build_dict(corpus, stopwords=None, measure='ICF'):
     '''
     Arguments:
 
-    words        --    the list of (stemmed) words used to build the dictionary
+    corpus       --    a list of documents, represented as lists of (stemmed)
+                       words
     stopwords    --    the list of (stemmed) words that should have zero weight
+    measure      --    the measure used to compute the weights ('ICF'
+                       i.e. 'inverse collection frequency' or 'IDF' i.e.
+                       'inverse document frequency'; defaults to 'ICF')
 
-    Returns: a dictionary of ICF (inverse collection frequency) weights
+    Returns: a dictionary of weights in the interval [0,1]
     '''
 
     import collections
     import math
 
-    term_count = collections.Counter(words)
-    total_count = len(words)
-    
     dictionary = {}
-    
-    for w, cnt in term_count.iteritems():
-        dictionary[w] = 1.0 - math.log(float(cnt) + 1) / math.log(total_count)
+
+    if measure == 'ICF':
+        words = [w for doc in corpus for w in doc]
         
+        term_count = collections.Counter(words)
+        total_count = float(len(words))
+        scale = math.log(total_count)
+    
+        for w, cnt in term_count.iteritems():
+            dictionary[w] = math.log(total_count / (cnt + 1)) / scale
+
+    elif measure == 'IDF':
+        corpus_size = float(len(corpus))
+        scale = math.log(corpus_size)
+
+        term_count = collections.defaultdict(int)
+
+        for doc in corpus:
+            words = set(doc)
+            for w in words:
+                term_count[w] += 1
+
+        for w, cnt in term_count.iteritems():
+            dictionary[w] = math.log(corpus_size / (cnt + 1)) / scale
+            
     if stopwords:
         for w in stopwords:
             dictionary[w] = 0.0
@@ -57,18 +79,21 @@ def build_dict(words, stopwords=None):
     return dictionary
 
 
-def build_dict_from_files(output_file, corpus, stopwords_file=None,
+def build_dict_from_files(output_file, corpus_files, stopwords_file=None,
                           reader=SimpleReader(), stemmer=Stemmer(),
-                          verbose=False):
+                          measure='ICF', verbose=False):
     '''
     Arguments:
 
     output_file       --    the binary stream where the dictionary should be
                             saved
-    corpus            --    a list of streams with words to process
+    corpus_files      --    a list of streams with words to process
     stopwords_file    --    a stream containing a list of stopwords
     reader            --    the Reader object to be used
     stemmer           --    the Stemmer object to be used
+    measure           --    the measure used to compute the weights ('ICF'
+                            i.e. 'inverse collection frequency' or 'IDF' i.e.
+                            'inverse document frequency'; defaults to 'ICF')
     verbose           --    whether information on the progress should be
                             printed on screen
     '''
@@ -81,20 +106,21 @@ def build_dict_from_files(output_file, corpus, stopwords_file=None,
         if verbose: print 'Reading stopwords...'
         stopwords = reader(stopwords_file.read())
 
-    words = []
+    corpus = []
         
-    print 'Reading corpus...'
-    for doc in corpus:
-        words += reader(doc.read())
+    if verbose: print 'Reading corpus...'
+    for doc in corpus_files:
+        corpus.append(reader(doc.read()))
 
     if verbose: print 'Processing tags...'
-    words = map(stemmer, words)
-    stopwords = map(stemmer, stopwords)
+    for i, doc in enumerate(corpus):
+        corpus[i] = [w.stem for w in map(stemmer, doc)]
+        
+    stopwords = [w.stem for w in map(stemmer, stopwords)]
 
     if verbose: print 'Building dictionary... '
-    dictionary = build_dict([w.stem for w in words],
-                            [w.stem for w in stopwords])
-
+    dictionary = build_dict(corpus, stopwords, measure)
+    
     if verbose: print 'Saving dictionary... '
     pickle.dump(dictionary, output_file, -1) 
     

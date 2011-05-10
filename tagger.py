@@ -31,7 +31,7 @@
 
 ================================================================================
 
-Dependencies: python2.7, stemming, nltk (optional), Tkinter (optional)
+Dependencies: python2.7, stemming, nltk (optional), tkinter (optional)
 
 $ easy_install stemming
 
@@ -193,16 +193,17 @@ class Reader:
 
         for p in phrases:
             words = self.match_words.findall(p)
-            if len(words) > 0:
+            if len(words) >= 2:
                 tags.append(Tag(words[0].lower()))
-                for w in words[1:-1]:
-                    # capitalized words in the middle of a phrase are always
-                    # proper nouns
-                    tags.append(Tag(w.lower(), proper=w[0].isupper()))
-                if len(words) > 1:
-                    tags.append(Tag(words[-1].lower(),
-                                    proper=words[-1][0].isupper(),
-                                    terminal=True))
+                if len(words) > 2:
+                    for w in words[1:-1]:
+                        # capitalized words in the middle of a phrase are always
+                        # proper nouns
+                        tags.append(Tag(w.lower(), proper=w[0].isupper()))
+                tags.append(Tag(words[-1].lower(), proper=words[-1][0].isupper(),
+                                terminal=True))
+            elif len(words) == 1:
+                tags.append(Tag(words[0].lower(), terminal=True))
 
         return tags
 

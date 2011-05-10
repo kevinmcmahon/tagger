@@ -68,7 +68,6 @@ class CollocationsRater(Rater):
     def __init__(weights, multitag_size=3):
         # there is no support for arbitrary length n-grams yet
         multitag_size = min(multitag_size, 3)
-        
         Rater.__init__(self, multitag_size)
     
     def create_multitags(self, tags):
@@ -79,20 +78,21 @@ class CollocationsRater(Rater):
 
 def build_dict_from_nltk(output_file, corpus=None, stopwords=None,
                          reader=SimpleReader(), stemmer=Stemmer(),
-                         verbose=False):
+                         measure='ICF', verbose=False):
     '''
     Arguments:
 
-    output_file           --    the binary stream where the dictionary should
-                                be saved
-    corpus                --    the NLTK corpus to use (defaults to
-                                nltk.corpus.brown)
-    stopwords             --    a list of (not stemmed) stopwords (defaults to
-                                nltk.corpus.stopwords.words('english'))
-    reader                --    the Reader object to be used
-    stemmer               --    the Stemmer object to be used
-    verbose               --    whether information on the progress should be
-                                printed on screen
+    output_file    --    the binary stream where the dictionary should be saved
+    corpus         --    the NLTK corpus to use (defaults to nltk.corpus.brown)
+    stopwords      --    a list of (not stemmed) stopwords (defaults to
+                         nltk.corpus.stopwords.words('english'))
+    reader         --    the Reader object to be used
+    stemmer        --    the Stemmer object to be used
+    measure        --    the measure used to compute the weights ('ICF'
+                         i.e. 'inverse collection frequency' or 'IDF' i.e.
+                         'inverse document frequency'; defaults to 'ICF')
+    verbose        --    whether information on the progress should be printed
+                         on screen
     '''
     
     from build_dict import build_dict
@@ -109,18 +109,22 @@ def build_dict_from_nltk(output_file, corpus=None, stopwords=None,
 
     # just for consistency
     if verbose: print 'Reading stopwords...'
+
+    corpus_list = []
     
     if verbose: print 'Reading corpus...'
-    text = ' '.join(corpus.words())
-    words = reader(text)
+    for doc in corpus.fileids():
+        text = ' '.join(corpus.words(doc))
+        corpus_list.append(reader(text))
 
     if verbose: print 'Processing tags...'
-    words = map(stemmer, words)
-    stopwords = map(stemmer, (Tag(w) for w in stopwords))
+    for i, doc in enumerate(corpus_list):
+        corpus_list[i] = [w.stem for w in map(stemmer, doc)]
+        
+    stopwords = [w.stem for w in map(stemmer, (Tag(w) for w in stopwords))]
 
     if verbose: print 'Building dictionary... '
-    dictionary = build_dict([w.stem for w in words],
-                            [w.stem for w in stopwords])
+    dictionary = build_dict(corpus_list, stopwords, measure)
 
     if verbose: print 'Saving dictionary... '
     pickle.dump(dictionary, output_file, -1) 
