@@ -113,8 +113,7 @@ def build_dict_from_files(output_file, corpus_files, stopwords_file=None,
         corpus.append(reader(doc.read()))
 
     if verbose: print 'Processing tags...'
-    for i, doc in enumerate(corpus):
-        corpus[i] = [w.stem for w in map(stemmer, doc)]
+    corpus = [[w.stem for w in map(stemmer, doc)] for doc in corpus]
         
     stopwords = [w.stem for w in map(stemmer, stopwords)]
 

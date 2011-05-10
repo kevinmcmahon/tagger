@@ -31,7 +31,8 @@
 
 ================================================================================
 
-Dependencies: python2.7, stemming, nltk (optional), tkinter (optional)
+Dependencies: python2.7, stemming, nltk (optional), tkinter (optional),
+              lxml (optional)
 
 $ easy_install stemming
 
@@ -70,6 +71,8 @@ Tags for  tests/guardian1.txt :
 ['bin laden', 'al-qaida', 'pakistan', 'killed', 'statement']
 Tags for  tests/guardian2.txt :
 ['clegg', 'party', 'lib dem', 'coalition', 'tory']
+Tags for  tests/post1.txt :
+['sony', 'playstation network', 'stolen', 'lawsuit', 'hacker attack']
 Tags for  tests/wikipedia1.txt :
 ['anthropic principle', 'universe', 'carter', 'life', 'observed']
 Tags for  tests/wikipedia2.txt :
@@ -182,7 +185,7 @@ class Reader:
 
         Returns: a list of tags respecting the order in the text
         '''
-
+        
         # deal with unicode apostrophes
         text = text.replace('’', '\'')
 

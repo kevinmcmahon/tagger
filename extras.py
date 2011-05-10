@@ -28,12 +28,10 @@ class HTMLReader(Reader):
     '''
 
     def __call__(self, html):
-        # TODO: strip HTML code, map entities
-        # tools: HTMLParser, htmlentitydefs, BeautifulSoup,
-        # regular expressions
-        
-        #return Reader.__call__(self, text)
-        pass
+        import lxml.html
+
+        text = lxml.html.fromstring(html).text_content().encode('utf-8')
+        return Reader.__call__(self, text)
 
     
 class SimpleReader(Reader):
@@ -57,23 +55,6 @@ class FastStemmer(Stemmer):
     def __init__(self):
         from stemming import porter
         Stemmer.__init__(self, porter)
-
-
-class CollocationsRater(Rater):
-    '''
-    Rater subclass that uses bigram and trigram collocations to identify
-    significant multitags
-    '''
-
-    def __init__(weights, multitag_size=3):
-        # there is no support for arbitrary length n-grams yet
-        multitag_size = min(multitag_size, 3)
-        Rater.__init__(self, multitag_size)
-    
-    def create_multitags(self, tags):
-        # TODO
-        # tools: nltk.collocations
-        pass
 
 
 def build_dict_from_nltk(output_file, corpus=None, stopwords=None,
@@ -118,8 +99,7 @@ def build_dict_from_nltk(output_file, corpus=None, stopwords=None,
         corpus_list.append(reader(text))
 
     if verbose: print 'Processing tags...'
-    for i, doc in enumerate(corpus_list):
-        corpus_list[i] = [w.stem for w in map(stemmer, doc)]
+    corpus_list = [[w.stem for w in map(stemmer, doc)] for doc in corpus_list]
         
     stopwords = [w.stem for w in map(stemmer, (Tag(w) for w in stopwords))]
 
