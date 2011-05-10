@@ -328,10 +328,17 @@ class Rater:
         
         # keep most frequent version of each tag
         clusters = collections.defaultdict(collections.Counter)
+        proper = set()
+        score = collections.defaultdict(float)
         for t in multitags:
             clusters[t][t.string] += 1
+            score[t] = max(score[t], t.score)
+            if t.proper:
+                proper.add(t)
         for t in term_count:
             t.string = clusters[t].most_common(1)[0][0]
+            t.score = score[t]
+            t.proper = (t in proper)
         
         # purge duplicates and one-character tags
         unique_tags = set(t for t in term_count if len(t.string) > 1)
