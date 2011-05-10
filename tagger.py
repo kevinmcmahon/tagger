@@ -65,19 +65,19 @@ Example::
     Tags for  tests/bbc1.txt :
     ['bin laden', 'obama', 'pakistan', 'killed', 'raid']
     Tags for  tests/bbc2.txt :
-    ['bristol', 'jo yeates', 'vincent tabak', 'murder', '17 december']
+    ['jo yeates', 'bristol', 'vincent tabak', 'murder', 'strangled']
     Tags for  tests/bbc3.txt :
-    ['snp', 'party', 'labour', 'election', 'scottish']
+    ['snp', 'party', 'election', 'scottish', 'labour']
     Tags for  tests/guardian1.txt :
-    ['bin laden', 'al-qaida', 'pakistan', 'killed', 'statement']
+    ['bin laden', 'al-qaida', 'killed', 'pakistan', 'al-fawwaz']
     Tags for  tests/guardian2.txt :
-    ['clegg', 'party', 'lib dem', 'coalition', 'tory']
+    ['clegg', 'tory', 'lib dem', 'party', 'coalition']
     Tags for  tests/post1.txt :
-    ['sony', 'playstation network', 'stolen', 'lawsuit', 'hacker attack']
+    ['sony', 'stolen', 'playstation network', 'hacker attack', 'lawsuit']
     Tags for  tests/wikipedia1.txt :
-    ['anthropic principle', 'universe', 'carter', 'life', 'observed']
+    ['universe', 'anthropic principle', 'observed', 'cosmological', 'theory']
     Tags for  tests/wikipedia2.txt :
-    ['beetroot', 'beet', 'betaine', 'vegetable', 'blood pressure'] 
+    ['beetroot', 'beet', 'betaine', 'blood pressure', 'dietary nitrate']
 '''
 
 import collections
@@ -270,7 +270,7 @@ class Rater:
     '''
     Class for estimating the relevance of tags
 
-    (the default implementation uses TF-ICF weight and geometric mean for
+    (the default implementation uses TF-IDF weight and geometric mean for
     multitags, but any other measure will work, provided that it is normalized
     in the interval [0,1]; a quite rudimental heuristic tries to discard
     redundant tags)

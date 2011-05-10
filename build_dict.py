@@ -29,16 +29,16 @@ from tagger import Stemmer
 from extras import SimpleReader
 
 
-def build_dict(corpus, stopwords=None, measure='ICF'):
+def build_dict(corpus, stopwords=None, measure='IDF'):
     '''
     Arguments:
 
     corpus       --    a list of documents, represented as lists of (stemmed)
                        words
     stopwords    --    the list of (stemmed) words that should have zero weight
-    measure      --    the measure used to compute the weights ('ICF'
-                       i.e. 'inverse collection frequency' or 'IDF' i.e.
-                       'inverse document frequency'; defaults to 'ICF')
+    measure      --    the measure used to compute the weights ('IDF'
+                       i.e. 'inverse document frequency' or 'ICF' i.e.
+                       'inverse collection frequency'; defaults to 'IDF')
 
     Returns: a dictionary of weights in the interval [0,1]
     '''
@@ -81,7 +81,7 @@ def build_dict(corpus, stopwords=None, measure='ICF'):
 
 def build_dict_from_files(output_file, corpus_files, stopwords_file=None,
                           reader=SimpleReader(), stemmer=Stemmer(),
-                          measure='ICF', verbose=False):
+                          measure='IDF', verbose=False):
     '''
     Arguments:
 
@@ -91,36 +91,29 @@ def build_dict_from_files(output_file, corpus_files, stopwords_file=None,
     stopwords_file    --    a stream containing a list of stopwords
     reader            --    the Reader object to be used
     stemmer           --    the Stemmer object to be used
-    measure           --    the measure used to compute the weights ('ICF'
-                            i.e. 'inverse collection frequency' or 'IDF' i.e.
-                            'inverse document frequency'; defaults to 'ICF')
+    measure           --    the measure used to compute the weights ('IDF'
+                            i.e. 'inverse document frequency' or 'ICF' i.e.
+                            'inverse collection frequency'; defaults to 'IDF')
     verbose           --    whether information on the progress should be
                             printed on screen
     '''
 
     import pickle
-    
-    stopwords = None
-    
-    if stopwords_file:
-        if verbose: print 'Reading stopwords...'
-        stopwords = reader(stopwords_file.read())
 
+    if verbose: print 'Processing corpus...'
     corpus = []
-        
-    if verbose: print 'Reading corpus...'
     for doc in corpus_files:
         corpus.append(reader(doc.read()))
-
-    if verbose: print 'Processing tags...'
     corpus = [[w.stem for w in map(stemmer, doc)] for doc in corpus]
-        
-    stopwords = [w.stem for w in map(stemmer, stopwords)]
+
+    stopwords = None
+    if stopwords_file:
+        if verbose: print 'Processing stopwords...'
+        stopwords = reader(stopwords_file.read())
+        stopwords = [w.stem for w in map(stemmer, stopwords)]
 
     if verbose: print 'Building dictionary... '
     dictionary = build_dict(corpus, stopwords, measure)
-    
-    if verbose: print 'Saving dictionary... '
     pickle.dump(dictionary, output_file, -1) 
     
 

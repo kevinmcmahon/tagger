@@ -58,20 +58,18 @@ class FastStemmer(Stemmer):
 
 
 def build_dict_from_nltk(output_file, corpus=None, stopwords=None,
-                         reader=SimpleReader(), stemmer=Stemmer(),
-                         measure='ICF', verbose=False):
+                         stemmer=Stemmer(), measure='IDF', verbose=False):
     '''
     Arguments:
 
     output_file    --    the binary stream where the dictionary should be saved
-    corpus         --    the NLTK corpus to use (defaults to nltk.corpus.brown)
+    corpus         --    the NLTK corpus to use (defaults to nltk.corpus.reuters)
     stopwords      --    a list of (not stemmed) stopwords (defaults to
-                         nltk.corpus.stopwords.words('english'))
-    reader         --    the Reader object to be used
+                         nltk.corpus.reuters.words('stopwords'))
     stemmer        --    the Stemmer object to be used
-    measure        --    the measure used to compute the weights ('ICF'
-                         i.e. 'inverse collection frequency' or 'IDF' i.e.
-                         'inverse document frequency'; defaults to 'ICF')
+    measure        --    the measure used to compute the weights ('IDF'
+                         i.e. 'inverse document frequency' or 'ICF' i.e.
+                         'inverse collection frequency'; defaults to 'IDF')
     verbose        --    whether information on the progress should be printed
                          on screen
     '''
@@ -80,33 +78,25 @@ def build_dict_from_nltk(output_file, corpus=None, stopwords=None,
     import nltk
     import pickle
 
-    if not corpus:
-        nltk.download('brown', quiet=True)
-        corpus = nltk.corpus.brown
-
-    if not stopwords:
-        nltk.download('stopwords', quiet=True)
-        stopwords = nltk.corpus.stopwords.words('english')
-
-    # just for consistency
-    if verbose: print 'Reading stopwords...'
+    if not (corpus and stopwords):
+        nltk.download('reuters')
+        
+    corpus = corpus or nltk.corpus.reuters
+    stopwords = stopwords or nltk.corpus.reuters.words('stopwords')
 
     corpus_list = []
     
-    if verbose: print 'Reading corpus...'
-    for doc in corpus.fileids():
-        text = ' '.join(corpus.words(doc))
-        corpus_list.append(reader(text))
+    if verbose: print 'Processing corpus...'
+    for file in corpus.fileids():
+        doc = [stemmer(Tag(w.lower())).stem for w in corpus.words(file)
+               if w[0].isalpha()]
+        corpus_list.append(doc)
 
-    if verbose: print 'Processing tags...'
-    corpus_list = [[w.stem for w in map(stemmer, doc)] for doc in corpus_list]
-        
-    stopwords = [w.stem for w in map(stemmer, (Tag(w) for w in stopwords))]
+    if verbose: print 'Processing stopwords...'
+    stopwords = [stemmer(Tag(w.lower())).stem for w in stopwords]
 
     if verbose: print 'Building dictionary... '
     dictionary = build_dict(corpus_list, stopwords, measure)
-
-    if verbose: print 'Saving dictionary... '
     pickle.dump(dictionary, output_file, -1) 
 
 
