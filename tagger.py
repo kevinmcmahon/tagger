@@ -195,7 +195,7 @@ class Reader:
     match_apostrophes = re.compile('`|’')
     match_punctuation = re.compile('[\.,;:\?!\(\)\[\]\{\}<>]')
     match_delimiters = re.compile('[\t\n\r\f\v]+')
-    match_words = re.compile('[\w\-\'_/]+')
+    match_words = re.compile('[\w\-\'_/\&]+')
     
     def __call__(self, text):
         '''
