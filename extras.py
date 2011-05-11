@@ -22,7 +22,21 @@
 from tagger import *
 
 
-class HTMLReader(Reader):
+class UnicodeReader(Reader):
+    '''
+    Reader subclass that converts Unicode strings to a close ASCII
+    representation
+    '''
+
+    def __call__(self, text):
+        import unicodedata
+
+        text = unicode(text)
+        text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore')
+        return Reader.__call__(self, text)
+
+
+class HTMLReader(UnicodeReader):
     '''
     Reader subclass that can parse HTML code from the input
     '''
@@ -31,7 +45,7 @@ class HTMLReader(Reader):
         import lxml.html
 
         text = lxml.html.fromstring(html).text_content().encode('utf-8')
-        return Reader.__call__(self, text)
+        return UnicodeReader.__call__(self, text)
 
     
 class SimpleReader(Reader):

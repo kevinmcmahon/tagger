@@ -185,7 +185,7 @@ class Reader:
         Returns: a list of tags respecting the order in the text
         '''
         
-        # deal with unicode apostrophes
+        # unify apostrophes
         text = text.replace('’', '\'')
 
         text = self.match_punctuation.sub('\n', text)
