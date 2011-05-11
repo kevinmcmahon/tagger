@@ -172,6 +172,7 @@ class Reader:
     facility would be handy)
     '''
 
+    match_apostrophes = re.compile('`|’')
     match_punctuation = re.compile('[\.,;:\?!\(\)\[\]\{\}<>]')
     match_delimiters = re.compile('[\t\n\r\f\v]+')
     match_words = re.compile('[\w\-\'_]+')
@@ -184,10 +185,8 @@ class Reader:
 
         Returns: a list of tags respecting the order in the text
         '''
-        
-        # unify apostrophes
-        text = text.replace('’', '\'')
 
+        text = self.match_apostrophes.sub('\'', text)
         text = self.match_punctuation.sub('\n', text)
         phrases = self.match_delimiters.split(text)
 

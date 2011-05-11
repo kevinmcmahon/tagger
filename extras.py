@@ -50,7 +50,7 @@ class HTMLReader(UnicodeReader):
     
 class SimpleReader(Reader):
     '''
-    Reader subclass that doens't perform any advanced analysis of the text.
+    Reader subclass that doesn't perform any advanced analysis of the text
     '''
     
     def __call__(self, text):
