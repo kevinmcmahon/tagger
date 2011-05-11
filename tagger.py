@@ -348,9 +348,9 @@ class Rater:
         # remove redundant tags
         for t, cnt in term_count.iteritems():
             words = t.stem.split()
-            for i in xrange(len(words)):
-                for j in xrange(1, len(words)):
-                    s = Tag(' '.join(words[i:i + j]))
+            for l in xrange(1, len(words)):
+                for i in xrange(len(words) - l + 1):
+                    s = Tag(' '.join(words[i:i + l]))
                     relative_freq = float(cnt) / term_count[s]
                     if ((relative_freq == 1.0 and t.proper) or
                         (relative_freq >= 0.5 and t.rating > 0.0)):
