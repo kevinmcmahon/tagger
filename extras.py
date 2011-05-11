@@ -55,7 +55,7 @@ class SimpleReader(Reader):
     
     def __call__(self, text):
         text = text.lower()
-        text = self.match_punctuation.sub('\n', text)
+        text = self.process_punctuation(text)
         words = self.match_words.findall(text)
         tags = [Tag(w) for w in words]
         return tags
@@ -68,9 +68,23 @@ class FastStemmer(Stemmer):
 
     def __init__(self):
         from stemming import porter
+        
         Stemmer.__init__(self, porter)
 
 
+class NaiveRater(Rater):
+    '''
+    Rater subclass that jusk ranks single-word tags by their frequency and
+    weight
+    '''
+
+    def __call__(self, tags):
+        self.rate_tags(tags)
+        # we still get rid of one-character tags
+        unique_tags = set(t for t in tags if len(t.string) > 1)
+        return sorted(unique_tags)
+    
+        
 def build_dict_from_nltk(output_file, corpus=None, stopwords=None,
                          stemmer=Stemmer(), measure='IDF', verbose=False):
     '''

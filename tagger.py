@@ -97,7 +97,7 @@ class Tag:
         string    --    the actual representation of the tag
         stem      --    the internal (usually stemmed) representation;
                         tags with the same stem are regarded as equal
-        rating    --    a measure of the relevance in the interval [0,1]
+        rating    --    a measure of the tag's relevance in the interval [0,1]
         proper    --    whether the tag is a proper noun
         terminal  --    set to True if the tag is at the end of a phrase
                         (or anyway it cannot be logically merged to the
@@ -109,7 +109,6 @@ class Tag:
         self.string  = string
         self.stem = stem or string
         self.rating = rating
-        self.score = self.rating
         self.proper = proper
         self.terminal = terminal
         
@@ -120,7 +119,7 @@ class Tag:
         return repr(self.string)
 
     def __lt__(self, other):
-        return self.score > other.score
+        return self.rating > other.rating
 
     def __hash__(self):
         return hash(self.stem)
@@ -130,7 +129,7 @@ class MultiTag(Tag):
     '''
     Class for aggregates of tags (usually next to each other in the document)
     '''
-
+    
     def __init__(self, tail, head=None):
         '''
         Arguments:
@@ -145,37 +144,58 @@ class MultiTag(Tag):
             Tag.__init__(self, tail.string, tail.stem, tail.rating,
                          tail.proper, tail.terminal)
             self.size = 1
+            self.subratings = [self.rating]
         else:
             self.string = ' '.join([head.string, tail.string])
             self.stem = ' '.join([head.stem, tail.stem])
             self.size = head.size + 1
 
-            # two proper nouns make a proper noun
             self.proper = (head.proper and tail.proper)
             self.terminal = tail.terminal
 
-            # the measure for multitags is the geometric mean of its unit subtags
-            self.rating = head.rating * tail.rating
-            # but proper nouns shouldn't be penalized by stopwords
-            if self.proper and self.rating == 0.0:
-                self.rating = max(head.rating, tail.rating) ** 2
-            self.score = self.rating ** (1.0 / self.size)
+            self.subratings = head.subratings + [tail.rating]
+            self.rating = self.combined_rating()
+                                           
+    def combined_rating(self):
+        '''
+        Method that computes the multitag's rating from the ratings of unit
+        subtags
 
+        (the default implementation uses the geometric mean - with a special
+        treatment for proper nouns - but this method can be overridden)
         
+        Returns: the rating of the multitag
+        '''
+        
+        # by default, the rating of a multitag is the geometric mean of its
+        # unit subtags' ratings
+        product = reduce(lambda x, y: x * y, self.subratings, 1.0)
+        root = self.size
+        
+        # but proper nouns shouldn't be penalized by stopwords
+        if product == 0.0 and self.proper:
+            nonzero = [r for r in self.subratings if r > 0.0]
+            if len(nonzero) == 0:
+                return 0.0
+            product = reduce(lambda x, y: x * y, nonzero, 1.0)
+            root = len(nonzero)
+            
+        return product ** (1.0 / root)
+
+    
 class Reader:
     '''
     Class for parsing a string of text to obtain tags
 
     (it just turns the string to lowercase and splits it according to
-    whitespaces and punctuation, identifying proper nounds and terminal words;
-    different rules and formats could be used, e.g. a good HTML-stripping
-    facility would be handy)
+    whitespaces and punctuation, identifying proper nouns and terminal words;
+    different rules and formats other than plain text could be used)
     '''
 
     match_apostrophes = re.compile('`|’')
     match_punctuation = re.compile('[\.,;:\?!\(\)\[\]\{\}<>]')
     match_delimiters = re.compile('[\t\n\r\f\v]+')
-    match_words = re.compile('[\w\-\'_]+')
+    match_words = re.compile('[\w\-\'_/]+')
     
     def __call__(self, text):
         '''
@@ -186,8 +206,7 @@ class Reader:
         Returns: a list of tags respecting the order in the text
         '''
 
-        text = self.match_apostrophes.sub('\'', text)
-        text = self.match_punctuation.sub('\n', text)
+        text = self.process_punctuation(text)
         phrases = self.match_delimiters.split(text)
 
         tags = []
@@ -208,12 +227,17 @@ class Reader:
 
         return tags
 
+    def process_punctuation(self, text):
+        text = self.match_apostrophes.sub('\'', text)
+        text = self.match_punctuation.sub('\n', text)
+        return text
+
     
 class Stemmer:
     '''
     Class for extracting the stem of a word
     
-    (by deafault it uses a simple open-source implementation of the Porter
+    (by default it uses a simple open-source implementation of Porter's
     algorithm; this can be improved a lot, so experimenting with different ones
     is advisable; nltk.stem provides different algorithms for many languages)
     '''
@@ -233,10 +257,22 @@ class Stemmer:
         if not stemmer:
             from stemming import porter2
             stemmer = porter2
-
         self.stemmer = stemmer
-    
-    def pre_stem(self, string):
+
+    def __call__(self, tag):
+        '''
+        Arguments:
+
+        tag    --    the tag to be stemmed
+
+        Returns: the stemmed tag
+        '''
+
+        string = self.preprocess(tag.string)
+        tag.stem = self.stemmer.stem(string)
+        return tag    
+        
+    def preprocess(self, string):
         '''
         Arguments:
 
@@ -250,29 +286,14 @@ class Stemmer:
         if match: return match.group(1)
         else: return string
     
-    
-    def __call__(self, tag):
-        '''
-        Arguments:
-
-        tag    --    the tag to be stemmed
-
-        Returns: the stemmed tag
-        '''
-
-        string = self.pre_stem(tag.string)
-        tag.stem = self.stemmer.stem(string)
-        return tag    
-
 
 class Rater:
     '''
     Class for estimating the relevance of tags
 
-    (the default implementation uses TF-IDF weight and geometric mean for
-    multitags, but any other measure will work, provided that it is normalized
-    in the interval [0,1]; a quite rudimental heuristic tries to discard
-    redundant tags)
+    (the default implementation uses TF (term frequency) multiplied by weight,
+    but any other reasonable measure is fine; a quite rudimental heuristic
+    tries to discard redundant tags)
     '''
 
     def __init__(self, weights, multitag_size=3):
@@ -289,7 +310,64 @@ class Rater:
         
         self.weights = weights
         self.multitag_size = multitag_size
+        
+    def __call__(self, tags):
+        '''
+        Arguments:
 
+        tags    --    a list of (preferably stemmed) tags
+
+        Returns: a list of unique (multi)tags sorted by relevance
+        '''
+
+        self.rate_tags(tags)
+        multitags = self.create_multitags(tags)
+
+        # keep most frequent version of each tag
+        clusters = collections.defaultdict(collections.Counter)
+        proper = collections.defaultdict(int)
+        ratings = collections.defaultdict(float)
+        
+        for t in multitags:
+            clusters[t][t.string] += 1
+            if t.proper:
+                proper[t] += 1
+                ratings[t] = max(ratings[t], t.rating)
+
+        term_count = collections.Counter(multitags)
+                
+        for t, cnt in term_count.iteritems():
+            t.string = clusters[t].most_common(1)[0][0]
+            proper_freq = proper[t] / float(cnt)
+            if proper_freq >= 0.5:
+                t.proper = True
+                t.rating = ratings[t]
+        
+        # purge duplicates and one-character tags
+        unique_tags = set(t for t in term_count if len(t.string) > 1)
+        # remove redundant tags
+        for t, cnt in term_count.iteritems():
+            words = t.stem.split()
+            for i in xrange(len(words)):
+                for j in xrange(1, len(words)):
+                    s = Tag(' '.join(words[i:i + j]))
+                    relative_freq = float(cnt) / term_count[s]
+                    if ((relative_freq == 1.0 and t.proper) or
+                        (relative_freq >= 0.5 and t.rating > 0.0)):
+                        unique_tags.discard(s)
+                    else:
+                        unique_tags.discard(t)
+        
+        return sorted(unique_tags)
+
+    def rate_tags(self, tags):        
+        term_count = collections.Counter(tags)
+        
+        for t in tags:
+            # rating of a single tag is term frequency * weight
+            t.rating = float(term_count[t]) / len(tags) * \
+                self.weights.get(t.stem, 1.0)
+    
     def create_multitags(self, tags):
         multitags = []
         
@@ -304,58 +382,6 @@ class Rater:
                     multitags.append(t)
 
         return multitags
-        
-    def __call__(self, tags):
-        '''
-        Arguments:
-
-        tags    --    a list of (preferably stemmed) tags
-
-        Returns: a list of unique (multi)tags sorted by relevance
-        '''
-
-        term_count = collections.Counter(tags)
-        
-        for t in tags:
-            t.rating = float(term_count[t]) / len(tags) * \
-                self.weights.get(t.stem, 1.0)
-
-        multitags = self.create_multitags(tags)
-
-        term_count = collections.Counter(multitags)
-        
-        # keep most frequent version of each tag
-        clusters = collections.defaultdict(collections.Counter)
-        proper = collections.defaultdict(int)
-        score = collections.defaultdict(float)
-        for t in multitags:
-            clusters[t][t.string] += 1
-            if t.proper:
-                proper[t] += 1
-                score[t] = max(score[t], t.score)
-        for t, cnt in term_count.iteritems():
-            t.string = clusters[t].most_common(1)[0][0]
-            proper_freq = proper[t] / float(cnt)
-            if proper_freq >= 0.5:
-                t.proper = True
-                t.score = score[t]
-        
-        # purge duplicates and one-character tags
-        unique_tags = set(t for t in term_count if len(t.string) > 1)
-        # remove redundant tags
-        for t, cnt in term_count.iteritems():
-            words = t.stem.split()
-            for i in xrange(len(words)):
-                for j in xrange(1, len(words)):
-                    subtag = Tag(' '.join(words[i:i + j]))
-                    relative_freq = float(cnt) / term_count[subtag]
-                    if ((relative_freq == 1.0 and t.proper) or
-                        (relative_freq >= 0.5 and t.score > 0.0)):
-                        unique_tags.discard(subtag)
-                    else:
-                        unique_tags.discard(t)
-        
-        return sorted(unique_tags)
     
     
 class Tagger:
@@ -394,7 +420,7 @@ class Tagger:
         tags = self.reader(text)
         tags = map(self.stemmer, tags)
         tags = self.rater(tags)
-        
+
         return tags[:tags_number]
 
 
@@ -413,7 +439,7 @@ if __name__ == '__main__':
     
     print 'Loading dictionary... '
     weights = pickle.load(open('data/dict.pkl', 'rb'))
-    
+
     tagger = Tagger(Reader(), Stemmer(), Rater(weights))
 
     for doc in documents:
