@@ -53,3 +53,5 @@ Example::
     ['universe', 'anthropic principle', 'observed', 'cosmological', 'theory']
     Tags for  tests/wikipedia2.txt :
     ['beetroot', 'beet', 'betaine', 'blood pressure', 'dietary nitrate']
+    Tags for  tests/wikipedia3.txt :
+    ['the lounge lizards', 'jazz', 'john lurie', 'musical', 'albums']
