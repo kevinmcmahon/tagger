@@ -55,7 +55,7 @@ class SimpleReader(Reader):
     
     def __call__(self, text):
         text = text.lower()
-        text = self.process_punctuation(text)
+        text = self.preprocess(text)
         words = self.match_words.findall(text)
         tags = [Tag(w) for w in words]
         return tags
