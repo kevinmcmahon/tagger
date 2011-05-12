@@ -75,7 +75,7 @@ It turns out that just working on the information contained in the document itse
 So far, we may define the relevance of a word as the product of two distinct functions: one that depends on the document itself, and one that depends on the corpus.
 A standard measure in information retrieval is TF-IDF (*term frequency-inverse document frequency*): the frequency of the word in the document multiplied by the (logarithm of) the inverse of the frequency of the word in the corpus (i.e. the cardinality of the corpus divided by the number of documents where the word is found).
 If we treat the whole corpus as a single document, and count the total occurrences of the term instead, we obtain ICF (*inverse collection frequency*).
-Both of these are implemented in the module, and any other reasonable measure should be fine, provided that it is normalised in the interval [0,1]. The dictionary is passed to the **Reader** object as the *weights* argument in its constructor.
+Both of these are implemented in the module, and any other reasonable measure should be fine, provided that it is normalised in the interval [0,1]. The dictionary is passed to the **Rater** object as the *weights* argument in its constructor.
 We might also want to define the first term of the product in a different way, and this is done by overriding the **rate_tags()** method (which by default calculates TF for each word).
 
 If we were not too picky about the results, these few bits would already make an acceptable tagger.
