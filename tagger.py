@@ -193,8 +193,8 @@ class Reader:
     '''
 
     match_apostrophes = re.compile('`|’')
-    match_punctuation = re.compile('[\.,;:\?!\(\)\[\]\{\}<>]')
-    match_delimiters = re.compile('[\t\n\r\f\v]+')
+    match_paragraphs = re.compile('[\.\?!\t\n\r\f\v]+')
+    match_phrases = re.compile('[,;:\(\)\[\]\{\}<>]+')
     match_words = re.compile('[\w\-\'_/&]+')
     
     def __call__(self, text):
@@ -206,30 +206,45 @@ class Reader:
         Returns: a list of tags respecting the order in the text
         '''
 
-        text = self.process_punctuation(text)
-        phrases = self.match_delimiters.split(text)
+        text = self.preprocess(text)
+
+        # split by full stops, newlines, question marks...
+        paragraphs = self.match_paragraphs.split(text)
 
         tags = []
 
-        for p in phrases:
-            words = self.match_words.findall(p)
-            if len(words) >= 2:
-                tags.append(Tag(words[0].lower()))
-                if len(words) > 2:
+        for par in paragraphs:
+            # split by commas, colons, parentheses...
+            phrases = self.match_phrases.split(par)
+
+            if len(phrases) > 0:
+                # first phrase of a paragraph
+                words = self.match_words.findall(phrases[0])
+                if len(words) > 1:
+                    tags.append(Tag(words[0].lower()))
                     for w in words[1:-1]:
-                        # capitalized words in the middle of a phrase are always
-                        # proper nouns
                         tags.append(Tag(w.lower(), proper=w[0].isupper()))
-                tags.append(Tag(words[-1].lower(), proper=words[-1][0].isupper(),
-                                terminal=True))
-            elif len(words) == 1:
-                tags.append(Tag(words[0].lower(), terminal=True))
+                    tags.append(Tag(words[-1].lower(),
+                                    proper=words[-1][0].isupper(),
+                                    terminal=True))
+                elif len(words) == 1:
+                    tags.append(Tag(words[0].lower(), terminal=True))
+
+            # following phrases
+            for phr in phrases[1:]:
+                words = self.match_words.findall(phr)
+                if len(words) > 1:
+                    for w in words[:-1]:
+                        tags.append(Tag(w.lower(), proper=w[0].isupper()))
+                if len(words) > 0:
+                    tags.append(Tag(words[-1].lower(),
+                                    proper=words[-1][0].isupper(),
+                                    terminal=True))
 
         return tags
 
-    def process_punctuation(self, text):
+    def preprocess(self, text):
         text = self.match_apostrophes.sub('\'', text)
-        text = self.match_punctuation.sub('\n', text)
         return text
 
     
