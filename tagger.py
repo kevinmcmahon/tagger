@@ -246,6 +246,15 @@ class Reader:
         return tags
 
     def preprocess(self, text):
+        '''
+        Arguments:
+
+        text    --    a string containing the text document to perform any
+                      required transformation before splitting
+
+        Returns: the processed text
+        '''
+        
         text = self.match_apostrophes.sub('\'', text)
         return text
 
@@ -377,7 +386,13 @@ class Rater:
         
         return sorted(unique_tags)
 
-    def rate_tags(self, tags):        
+    def rate_tags(self, tags):
+        '''
+        Arguments:
+
+        tags    --    a list of tags to be assigned a rating
+        '''
+        
         term_count = collections.Counter(tags)
         
         for t in tags:
@@ -386,6 +401,14 @@ class Rater:
                 self.weights.get(t.stem, 1.0)
     
     def create_multitags(self, tags):
+        '''
+        Arguments:
+
+        tags    --    a list of tags (respecting the order in the text)
+
+        Returns: a list of multitags
+        '''
+        
         multitags = []
         
         for i in xrange(len(tags)):

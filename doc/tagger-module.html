@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>tagger</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://github.com/apresta/tagger">tagger</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Module&nbsp;tagger
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="tagger-module.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== MODULE DESCRIPTION ==================== -->
+<h1 class="epydoc">Module tagger</h1><p class="nomargin-top"><span class="codelink"><a href="tagger-pysrc.html">source&nbsp;code</a></span></p>
+<p>====== tagger ======</p>
+  <p>Module for extracting tags from text documents.</p>
+  <p>Copyright (C) 2011 by Alessandro Presta</p>
+  <h1 class="heading">Configuration</h1>
+    <p>Dependencies: python2.7, stemming, nltk (optional), lxml (optional),
+    tkinter (optional)</p>
+    <p>You can install the stemming package with:</p>
+<pre class="literalblock">
+   $ easy_install stemming
+</pre>
+  <h1 class="heading">Usage</h1>
+    <p>Tagging a text document from Python:</p>
+<pre class="literalblock">
+   import tagger
+   weights = pickle.load(open('data/dict.pkl', 'rb')) # or your own dictionary
+   myreader = tagger.Reader() # or your own reader class
+   mystemmer = tagger.Stemmer() # or your own stemmer class
+   myrater = tagger.Rater(weights) # or your own... (you got the idea)
+   mytagger = Tagger(myreader, mystemmer, myrater)
+   best_3_tags = mytagger(text_string, 3)
+</pre>
+    <p>Running the module as a script:</p>
+<pre class="literalblock">
+   $ ./tagger.py &lt;text document(s) to tag&gt;
+</pre>
+    <p>Example:</p>
+<pre class="literalblock">
+   $ ./tagger.py tests/*
+   Loading dictionary... 
+   Tags for  tests/bbc1.txt :
+   ['bin laden', 'obama', 'pakistan', 'killed', 'raid']
+   Tags for  tests/bbc2.txt :
+   ['jo yeates', 'bristol', 'vincent tabak', 'murder', 'strangled']
+   Tags for  tests/bbc3.txt :
+   ['snp', 'party', 'election', 'scottish', 'labour']
+   Tags for  tests/guardian1.txt :
+   ['bin laden', 'al-qaida', 'killed', 'pakistan', 'al-fawwaz']
+   Tags for  tests/guardian2.txt :
+   ['clegg', 'tory', 'lib dem', 'party', 'coalition']
+   Tags for  tests/post1.txt :
+   ['sony', 'stolen', 'playstation network', 'hacker attack', 'lawsuit']
+   Tags for  tests/wikipedia1.txt :
+   ['universe', 'anthropic principle', 'observed', 'cosmological', 'theory']
+   Tags for  tests/wikipedia2.txt :
+   ['beetroot', 'beet', 'betaine', 'blood pressure', 'dietary nitrate']
+   Tags for  tests/wikipedia3.txt :
+   ['the lounge lizards', 'jazz', 'john lurie', 'musical', 'albums']
+</pre>
+
+<!-- ==================== CLASSES ==================== -->
+<a name="section-Classes"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Classes</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Classes"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="tagger.Tag-class.html" class="summary-name">Tag</a><br />
+      General class for tags (small units of text)
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="tagger.MultiTag-class.html" class="summary-name">MultiTag</a><br />
+      Class for aggregates of tags (usually next to each other in the 
+        document)
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="tagger.Reader-class.html" class="summary-name">Reader</a><br />
+      Class for parsing a string of text to obtain tags
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="tagger.Stemmer-class.html" class="summary-name">Stemmer</a><br />
+      Class for extracting the stem of a word
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="tagger.Rater-class.html" class="summary-name">Rater</a><br />
+      Class for estimating the relevance of tags
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="tagger.Tagger-class.html" class="summary-name">Tagger</a><br />
+      Master class for tagging text documents
+    </td>
+  </tr>
+</table>
+<!-- ==================== VARIABLES ==================== -->
+<a name="section-Variables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Variables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="None">None</code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://github.com/apresta/tagger">tagger</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri May 13 00:34:46 2011
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>
