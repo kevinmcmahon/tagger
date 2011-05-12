@@ -66,12 +66,26 @@ A **Reader** object may accept as input a document in some format, perform some 
 A very straightforward way of doing this would be to just match all the words with a regular expression, and this is indeed what the **SimpleReader** class does.
 
 The **Stemmer** tries to recognise the root of a word, in order to identify slightly different forms. This is already a quite complicated task, and it's clearly language-specific.
-The *stem* module in the NLTK package provides algorithms for many languages and integrates nicely with the tagger.
+The *stem* module in the NLTK package provides algorithms for many languages
+and integrates nicely with the tagger::
+    
+    import nltk
+    # an English stemmer using Lancaster's algorithm
+    mystemmer = Stemmer(nltk.stem.LancasterStemmer)
+    # an Italian stemmer
+    class MyItalianStemmer(Stemmer):
+        def __init__(self):
+            Stemmer.__init__(self, nltk.stem.ItalianStemmer)
+        def preprocess(self, string):
+            # do something with the string before passing it to nltk's stemmer
 
 The **Rater** takes the list of words contained in the document, together with any additional information gathered at the previous stages, and returns a list of tags (i.e. words or small units of text) ordered by some idea of "relevance".
 
 It turns out that just working on the information contained in the document itself is not enough, because it says nothing about the frequency of a term in the language. For this reason, an early "off-line" phase of the algorithm consists in analysing a *corpus* (i.e. a sample of documents written in the same language) to build a dictionary of known words. This is taken care by the **build_dict()** function.
-It is advised to build your own dictionaries, and the **build_dict_from_nltk()** function in the *extras* module enables you to use the corpora included in NLTK.
+It is advised to build your own dictionaries, and the **build_dict_from_nltk()** function in the *extras* module enables you to use the corpora included in NLTK::
+    
+    build_dict_from_nltk(output_file, nltk.corpus.brown, 
+                         nltk.corpus.stopwords('english'), measure='ICF')
 
 So far, we may define the relevance of a word as the product of two distinct functions: one that depends on the document itself, and one that depends on the corpus.
 A standard measure in information retrieval is TF-IDF (*term frequency-inverse
@@ -79,7 +93,11 @@ document frequency*): the frequency of the word in the document multiplied by
 the (logarithm of) the inverse of its frequency in the corpus (i.e. the cardinality of the corpus divided by the number of documents where the word is found).
 If we treat the whole corpus as a single document, and count the total occurrences of the term instead, we obtain ICF (*inverse collection frequency*).
 Both of these are implemented in the *build_dict* module, and any other reasonable measure should be fine, provided that it is normalised in the interval [0,1]. The dictionary is passed to the **Rater** object as the *weights* argument in its constructor.
-We might also want to define the first term of the product in a different way, and this is done by overriding the **rate_tags()** method (which by default calculates TF for each word).
+We might also want to define the first term of the product in a different way, and this is done by overriding the **rate_tags()** method (which by default calculates TF for each word and multiplies it by its weight)::
+
+    class MyRater(Rater):
+        def rate_tags(self, tags):
+            # set each tag's rating as you wish
 
 If we were not too picky about the results, these few bits would already make an acceptable tagger.
 However, it's a matter of fact that tags formed only by single words are quite limited: while "obama" and "barack obama" are both reasonable tags (and it is quite easy to treat cases like this in order to regard them as equal), having "laden" and "bin" as two separate tags is definitely not acceptable and misleading.
