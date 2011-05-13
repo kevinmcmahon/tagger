@@ -85,7 +85,7 @@ It turns out that just working on the information contained in the document itse
 It is advised to build your own dictionaries, and the **build_dict_from_nltk()** function in the *extras* module enables you to use the corpora included in NLTK::
     
     build_dict_from_nltk(output_file, nltk.corpus.brown, 
-                         nltk.corpus.stopwords('english'), measure='ICF')
+                         nltk.corpus.stopwords.words('english'), measure='ICF')
 
 So far, we may define the relevance of a word as the product of two distinct functions: one that depends on the document itself, and one that depends on the corpus.
 A standard measure in information retrieval is TF-IDF (*term frequency-inverse
