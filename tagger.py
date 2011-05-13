@@ -94,18 +94,16 @@ class Tag:
     def __init__(self, string, stem=None, rating=1.0, proper=False,
                  terminal=False):
         '''
-        Arguments:
+        @param string:   the actual representation of the tag
+        @param stem:     the internal (usually stemmed) representation;
+                         tags with the same stem are regarded as equal
+        @param rating:   a measure of the tag's relevance in the interval [0,1]
+        @param proper:   whether the tag is a proper noun
+        @param terminal: set to True if the tag is at the end of a phrase
+                         (or anyway it cannot be logically merged to the
+                         following one)
 
-        string    --    the actual representation of the tag
-        stem      --    the internal (usually stemmed) representation;
-                        tags with the same stem are regarded as equal
-        rating    --    a measure of the tag's relevance in the interval [0,1]
-        proper    --    whether the tag is a proper noun
-        terminal  --    set to True if the tag is at the end of a phrase
-                        (or anyway it cannot be logically merged to the
-                        following one)
-
-        Returns: a new Tag object
+        @returns: a new L{Tag} object
         '''
             
         self.string  = string
@@ -134,12 +132,10 @@ class MultiTag(Tag):
     
     def __init__(self, tail, head=None):
         '''
-        Arguments:
+        @param tail: the L{Tag} object to add to the first part (head)
+        @param head: the (eventually absent) L{MultiTag} to be extended
 
-        tail    --    the Tag object to add to the first part (head)
-        head    --    the (eventually absent) MultiTag to be extended
-
-        Returns: a new MultiTag object
+        @returns: a new {MultiTag} object
         '''
         
         if not head:
@@ -166,7 +162,7 @@ class MultiTag(Tag):
         (the default implementation uses the geometric mean - with a special
         treatment for proper nouns - but this method can be overridden)
         
-        Returns: the rating of the multitag
+        @returns: the rating of the multitag
         '''
         
         # by default, the rating of a multitag is the geometric mean of its
@@ -201,11 +197,9 @@ class Reader:
     
     def __call__(self, text):
         '''
-        Arguments:
+        @param text: the string of text to be tagged
 
-        text    --    the string of text to be tagged
-
-        Returns: a list of tags respecting the order in the text
+        @returns: a list of tags respecting the order in the text
         '''
 
         text = self.preprocess(text)
@@ -247,12 +241,10 @@ class Reader:
 
     def preprocess(self, text):
         '''
-        Arguments:
+        @param text: a string containing the text document to perform any
+                     required transformation before splitting
 
-        text    --    a string containing the text document to perform any
-                      required transformation before splitting
-
-        Returns: the processed text
+        @returns:    the processed text
         '''
         
         text = self.match_apostrophes.sub('\'', text)
@@ -272,12 +264,10 @@ class Stemmer:
 
     def __init__(self, stemmer=None):
         '''
-        Arguments:
+        @param stemmer: an object or module with a 'stem' method (defaults to
+                        stemming.porter2)
 
-        stemmer    --    an object or module with a 'stem' method (defaults to
-                         stemming.porter2)
-
-        Returns: a new Stemmer object
+        @returns: a new L{Stemmer} object
         '''
         
         if not stemmer:
@@ -287,11 +277,9 @@ class Stemmer:
 
     def __call__(self, tag):
         '''
-        Arguments:
+        @param tag: the tag to be stemmed
 
-        tag    --    the tag to be stemmed
-
-        Returns: the stemmed tag
+        @returns: the stemmed tag
         '''
 
         string = self.preprocess(tag.string)
@@ -300,11 +288,9 @@ class Stemmer:
         
     def preprocess(self, string):
         '''
-        Arguments:
+        @param string: a string to be treated before passing it to the stemmer
 
-        string    --    a string to be treated before passing it to the stemmer
-
-        Returns: the processed string
+        @returns: the processed string
         '''
 
         # get rid of contractions and possessive forms
@@ -324,14 +310,12 @@ class Rater:
 
     def __init__(self, weights, multitag_size=3):
         '''
-        Arguments:
+        @param weights:       a dictionary of weights normalized in the
+                              interval [0,1]
+        @param multitag_size: maximum size of tags formed by multiple unit
+                              tags
 
-        weights          --    a dictionary of weights normalized in the
-                               interval [0,1]
-        multitag_size    --    maximum size of tags formed by multiple unit
-                               tags
-
-        Returns: a new Rater object
+        @returns: a new L{Rater} object
         '''
         
         self.weights = weights
@@ -339,11 +323,9 @@ class Rater:
         
     def __call__(self, tags):
         '''
-        Arguments:
+        @param tags: a list of (preferably stemmed) tags
 
-        tags    --    a list of (preferably stemmed) tags
-
-        Returns: a list of unique (multi)tags sorted by relevance
+        @returns: a list of unique (multi)tags sorted by relevance
         '''
 
         self.rate_tags(tags)
@@ -388,9 +370,7 @@ class Rater:
 
     def rate_tags(self, tags):
         '''
-        Arguments:
-
-        tags    --    a list of tags to be assigned a rating
+        @param tags: a list of tags to be assigned a rating
         '''
         
         term_count = collections.Counter(tags)
@@ -402,11 +382,9 @@ class Rater:
     
     def create_multitags(self, tags):
         '''
-        Arguments:
+        @param tags: a list of tags (respecting the order in the text)
 
-        tags    --    a list of tags (respecting the order in the text)
-
-        Returns: a list of multitags
+        @returns: a list of multitags
         '''
         
         multitags = []
@@ -434,13 +412,11 @@ class Tagger:
 
     def __init__(self, reader, stemmer, rater):
         '''
-        Arguments:
+        @param reader: a L{Reader} object
+        @param stemmer: a L{Stemmer} object
+        @param rater: a L{Rater} object
 
-        reader    --    a callable object with the same interface as Reader
-        stemmer   --    a callable object with the same interface as Stemmer
-        rater     --    a callable object with the same interface as Rater
-
-        Returns: a new Tagger object
+        @returns: a new L{Tagger} object
         '''
         
         self.reader = reader
@@ -449,10 +425,8 @@ class Tagger:
 
     def __call__(self, text, tags_number=5):
         '''
-        Arguments:
-
-        text           --    the string of text to be tagged
-        tags_number    --    number of best tags to be returned
+        @param text:        the string of text to be tagged
+        @param tags_number: number of best tags to be returned
 
         Returns: a list of (hopefully) relevant tags
         ''' 

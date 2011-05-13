@@ -31,16 +31,14 @@ from extras import SimpleReader
 
 def build_dict(corpus, stopwords=None, measure='IDF'):
     '''
-    Arguments:
+    @param corpus:    a list of documents, represented as lists of (stemmed)
+                      words
+    @param stopwords: the list of (stemmed) words that should have zero weight
+    @param measure:   the measure used to compute the weights ('IDF'
+                      i.e. 'inverse document frequency' or 'ICF' i.e.
+                      'inverse collection frequency'; defaults to 'IDF')
 
-    corpus       --    a list of documents, represented as lists of (stemmed)
-                       words
-    stopwords    --    the list of (stemmed) words that should have zero weight
-    measure      --    the measure used to compute the weights ('IDF'
-                       i.e. 'inverse document frequency' or 'ICF' i.e.
-                       'inverse collection frequency'; defaults to 'IDF')
-
-    Returns: a dictionary of weights in the interval [0,1]
+    @returns: a dictionary of weights in the interval [0,1]
     '''
 
     import collections
@@ -83,19 +81,17 @@ def build_dict_from_files(output_file, corpus_files, stopwords_file=None,
                           reader=SimpleReader(), stemmer=Stemmer(),
                           measure='IDF', verbose=False):
     '''
-    Arguments:
-
-    output_file       --    the binary stream where the dictionary should be
-                            saved
-    corpus_files      --    a list of streams with words to process
-    stopwords_file    --    a stream containing a list of stopwords
-    reader            --    the Reader object to be used
-    stemmer           --    the Stemmer object to be used
-    measure           --    the measure used to compute the weights ('IDF'
-                            i.e. 'inverse document frequency' or 'ICF' i.e.
-                            'inverse collection frequency'; defaults to 'IDF')
-    verbose           --    whether information on the progress should be
-                            printed on screen
+    @param output_file:    the binary stream where the dictionary should be
+                           saved
+    @param corpus_files:   a list of streams with words to process
+    @param stopwords_file: a stream containing a list of stopwords
+    @param reader:         the L{Reader} object to be used
+    @param stemmer:        the L{Stemmer} object to be used
+    @param measure:        the measure used to compute the weights ('IDF'
+                           i.e. 'inverse document frequency' or 'ICF' i.e.
+                           'inverse collection frequency'; defaults to 'IDF')
+    @param verbose:        whether information on the progress should be
+                           printed on screen
     '''
 
     import pickle

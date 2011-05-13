@@ -86,7 +86,8 @@
           <td><span class="summary-sig"><a href="build_dict-module.html#build_dict" class="summary-sig-name">build_dict</a>(<span class="summary-sig-arg">corpus</span>,
         <span class="summary-sig-arg">stopwords</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">measure</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">IDF</code><code class="variable-quote">'</code></span>)</span><br />
-      Arguments:</td>
+      Returns:
+      a dictionary of weights in the interval [0,1]</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="build_dict-pysrc.html#build_dict">source&nbsp;code</a></span>
             
@@ -108,8 +109,7 @@
         <span class="summary-sig-arg">reader</span>=<span class="summary-sig-default">SimpleReader()</span>,
         <span class="summary-sig-arg">stemmer</span>=<span class="summary-sig-default">Stemmer()</span>,
         <span class="summary-sig-arg">measure</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">IDF</code><code class="variable-quote">'</code></span>,
-        <span class="summary-sig-arg">verbose</span>=<span class="summary-sig-default">False</span>)</span><br />
-      Arguments:</td>
+        <span class="summary-sig-arg">verbose</span>=<span class="summary-sig-default">False</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="build_dict-pysrc.html#build_dict_from_files">source&nbsp;code</a></span>
             
@@ -179,21 +179,18 @@
     </td>
   </tr></table>
   
-  <pre class="literalblock">
-
-Arguments:
-
-corpus       --    a list of documents, represented as lists of (stemmed)
-                   words
-stopwords    --    the list of (stemmed) words that should have zero weight
-measure      --    the measure used to compute the weights ('IDF'
-                   i.e. 'inverse document frequency' or 'ICF' i.e.
-                   'inverse collection frequency'; defaults to 'IDF')
-
-Returns: a dictionary of weights in the interval [0,1]
-
-</pre>
+  
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>corpus</code></strong> - a list of documents, represented as lists of (stemmed) words</li>
+        <li><strong class="pname"><code>stopwords</code></strong> - the list of (stemmed) words that should have zero weight</li>
+        <li><strong class="pname"><code>measure</code></strong> - the measure used to compute the weights ('IDF' i.e. 'inverse 
+          document frequency' or 'ICF' i.e. 'inverse collection frequency';
+          defaults to 'IDF')</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>a dictionary of weights in the interval [0,1]</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -217,24 +214,22 @@ Returns: a dictionary of weights in the interval [0,1]
     </td>
   </tr></table>
   
-  <pre class="literalblock">
-
-Arguments:
-
-output_file       --    the binary stream where the dictionary should be
-                        saved
-corpus_files      --    a list of streams with words to process
-stopwords_file    --    a stream containing a list of stopwords
-reader            --    the Reader object to be used
-stemmer           --    the Stemmer object to be used
-measure           --    the measure used to compute the weights ('IDF'
-                        i.e. 'inverse document frequency' or 'ICF' i.e.
-                        'inverse collection frequency'; defaults to 'IDF')
-verbose           --    whether information on the progress should be
-                        printed on screen
-
-</pre>
+  
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>output_file</code></strong> - the binary stream where the dictionary should be saved</li>
+        <li><strong class="pname"><code>corpus_files</code></strong> - a list of streams with words to process</li>
+        <li><strong class="pname"><code>stopwords_file</code></strong> - a stream containing a list of stopwords</li>
+        <li><strong class="pname"><code>reader</code></strong> - the <a href="tagger.Reader-class.html" class="link">Reader</a> 
+          object to be used</li>
+        <li><strong class="pname"><code>stemmer</code></strong> - the <a href="tagger.Stemmer-class.html" class="link">Stemmer</a> 
+          object to be used</li>
+        <li><strong class="pname"><code>measure</code></strong> - the measure used to compute the weights ('IDF' i.e. 'inverse 
+          document frequency' or 'ICF' i.e. 'inverse collection frequency';
+          defaults to 'IDF')</li>
+        <li><strong class="pname"><code>verbose</code></strong> - whether information on the progress should be printed on screen</li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -267,7 +262,7 @@ verbose           --    whether information on the progress should be
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri May 13 00:34:46 2011
+    Generated by Epydoc 3.0.1 on Fri May 13 01:17:12 2011
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

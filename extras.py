@@ -88,18 +88,16 @@ class NaiveRater(Rater):
 def build_dict_from_nltk(output_file, corpus=None, stopwords=None,
                          stemmer=Stemmer(), measure='IDF', verbose=False):
     '''
-    Arguments:
-
-    output_file    --    the binary stream where the dictionary should be saved
-    corpus         --    the NLTK corpus to use (defaults to nltk.corpus.reuters)
-    stopwords      --    a list of (not stemmed) stopwords (defaults to
-                         nltk.corpus.reuters.words('stopwords'))
-    stemmer        --    the Stemmer object to be used
-    measure        --    the measure used to compute the weights ('IDF'
-                         i.e. 'inverse document frequency' or 'ICF' i.e.
-                         'inverse collection frequency'; defaults to 'IDF')
-    verbose        --    whether information on the progress should be printed
-                         on screen
+    @param output_file: the binary stream where the dictionary should be saved
+    @param corpus:      the NLTK corpus to use (defaults to nltk.corpus.reuters)
+    @param stopwords:   a list of (not stemmed) stopwords (defaults to
+                        nltk.corpus.reuters.words('stopwords'))
+    @param stemmer:     the L{Stemmer} object to be used
+    @param measure:     the measure used to compute the weights ('IDF'
+                        i.e. 'inverse document frequency' or 'ICF' i.e.
+                        'inverse collection frequency'; defaults to 'IDF')
+    @param verbose:     whether information on the progress should be printed
+                        on screen
     '''
     
     from build_dict import build_dict
