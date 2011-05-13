@@ -135,7 +135,7 @@ class MultiTag(Tag):
         @param tail: the L{Tag} object to add to the first part (head)
         @param head: the (eventually absent) L{MultiTag} to be extended
 
-        @returns: a new {MultiTag} object
+        @returns: a new L{MultiTag} object
         '''
         
         if not head:
